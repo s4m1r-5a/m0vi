@@ -1,0 +1,453 @@
+<main class="index" id="linkestilo">
+    <!--<div class="conta">
+        <h1>Pure CSS Netflix Video Carousel</h1>
+        <p>
+            Inspired by <a href="https://twitter.com/Eli_White">Eli White's</a> article <a
+                href="http://eng.wealthfront.com/2015/06/implementing-netflix-redesign.html">Performant CSS
+                Animations: Netflix Case Study</a>, his <a href="https://codepen.io/TheSavior/pen/LVeYBp">example
+                pen</a>, and <a href="http://matthewjamestaylor.com/">Matt Taylor's</a> <a
+                href="https://codepen.io/mattjamestaylor/pen/dodYPr">CSS-only version.</a>
+        </p>
+    </div>-->
+    <div class="bodys">
+        <!--<div class="card bg-dark text-white">
+            <img class="card-img" src="https://image.tmdb.org/t/p/w533_and_h300_bestv2/upUy2QhMZEmtypPW3PdieKLAHxh.jpg"
+                alt="Card image" style="-o-object-fit: cover; object-fit: cover;">
+            <div class="card-img-overlay">
+                <h5 class="card-title">Card title</h5>
+                <p class="card-text">This is a wider card with supporting text below as a natural lead-in to
+                    additional
+                    content. This content is a little bit longer.</p>
+                <p class="card-text">Last updated 3 mins ago</p>
+            </div>
+        </div>-->
+
+        <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
+            <ol class="carousel-indicators">
+                <li data-target="#carouselExampleIndicators" data-slide-to="0" class="active"></li>
+                <li data-target="#carouselExampleIndicators" data-slide-to="1"></li>
+                <li data-target="#carouselExampleIndicators" data-slide-to="2"></li>
+            </ol>
+            <div class="carousel-inner">
+                <div class="carousel-item active">
+                    <img class="d-block w-100"
+                        src="https://image.tmdb.org/t/p/w533_and_h300_bestv2/upUy2QhMZEmtypPW3PdieKLAHxh.jpg"
+                        alt="First slide">
+                    <!--<div class="carousel-caption d-none d-md-block" style="top: 0;">
+                        <h1 class="text-white">Bad Boys for Life</h1>
+                        <p>El Departamento de Policía de Miami y su equipo de élite AMMO intentan
+                            estator a Armando
+                            Armas, jefe de un cartel de la droga. Armando es un asesino de sangre fría con una
+                            naturaleza viciosa y él está comprometido con el trabajo del cartel y es enviado por su
+                            madre Isabel, para matar a Mike.</p>
+                    </div>-->
+                </div>
+                <div class="carousel-item">
+                    <img class="d-block w-100"
+                        src="https://image.tmdb.org/t/p/w533_and_h300_bestv2/y95lQLnuNKdPAzw9F9Ab8kJ80c3.jpg"
+                        alt="Second slide">
+                </div>
+                <div class="carousel-item">
+                    <img class="d-block w-100"
+                        src="https://image.tmdb.org/t/p/w533_and_h300_bestv2/tMLtQTmkyyVGI0HCuQeQw9Ja6fJ.jpg"
+                        alt="Third slide">
+                </div>
+                <div class="body" style="margin-top: 35%;">
+                    <!-- partial:index.partial.html -->
+                    <div class="contain 3">
+                        <input type="hidden" class="px" value="0">
+                        <input type="hidden" class="ctn" value="0">
+                        <div class="btn prev">D</div>
+                        <div class="btn next">A</div>
+                        <div class="row">
+                            <div class="row__inner">
+                                <div class="tile" data-toggle="tooltip" data-placement="top" data-container="body"
+                                    title="Haz click para editar reserva">
+                                    <div class="tile__media">
+                                        <img class="tile__img"
+                                            src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/70390/show-1.jpg"
+                                            alt="" />
+                                    </div>
+                                    <div class="tile__details">
+                                        <div class="tile__title">
+                                            Bad Boys 3
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="tile" data-toggle="tooltip" data-placement="top" data-container="body"
+                                    title='Bad Boys 3 - Dos Policias Rebeldes 3'>
+                                    <div class="tile__media">
+                                        <img class="tile__img"
+                                            src="https://image.tmdb.org/t/p/w600_and_h900_bestv2/y95lQLnuNKdPAzw9F9Ab8kJ80c3.jpg"
+                                            alt="" />
+                                    </div>
+                                    <div class="tile__details">
+                                        <div class="tile__title">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="tile">
+                                    <div class="tile__media">
+                                        <img class="tile__img"
+                                            src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/70390/show-3.jpg"
+                                            alt="" />
+                                    </div>
+                                    <div class="tile__details">
+                                        <div class="tile__title">
+                                            Top Gear
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="tile">
+                                    <div class="tile__media">
+                                        <img class="tile__img"
+                                            src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/70390/show-4.jpg"
+                                            alt="" />
+                                    </div>
+                                    <div class="tile__details">
+                                        <div class="tile__title">
+                                            Top Gear
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="tile">
+                                    <div class="tile__media">
+                                        <img class="tile__img"
+                                            src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/70390/show-5.jpg"
+                                            alt="" />
+                                    </div>
+                                    <div class="tile__details">
+                                        <div class="tile__title">
+                                            Top Gear
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="tile">
+                                    <div class="tile__media">
+                                        <img class="tile__img"
+                                            src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/70390/show-6.jpg"
+                                            alt="" />
+                                    </div>
+                                    <div class="tile__details">
+                                        <div class="tile__title">
+                                            Top Gear
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="tile">
+                                    <div class="tile__media">
+                                        <img class="tile__img"
+                                            src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/70390/show-7.jpg"
+                                            alt="" />
+                                    </div>
+                                    <div class="tile__details">
+                                        <div class="tile__title">
+                                            Top Gear
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="tile">
+                                    <div class="tile__media">
+                                        <img class="tile__img"
+                                            src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/70390/show-8.jpg"
+                                            alt="" />
+                                    </div>
+                                    <div class="tile__details">
+                                        <div class="tile__title">
+                                            Top Gear
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="tile">
+                                    <div class="tile__media">
+                                        <img class="tile__img"
+                                            src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/70390/show-9.jpg"
+                                            alt="" />
+                                    </div>
+                                    <div class="tile__details">
+                                        <div class="tile__title">
+                                            Top Gear
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="tile">
+                                    <div class="tile__media">
+                                        <img class="tile__img"
+                                            src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/70390/show-10.jpg"
+                                            alt="" />
+                                    </div>
+                                    <div class="tile__details">
+                                        <div class="tile__title">
+                                            Top Gear
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="tile">
+                                    <div class="tile__media">
+                                        <img class="tile__img"
+                                            src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/70390/show-11.jpg"
+                                            alt="" />
+                                    </div>
+                                    <div class="tile__details">
+                                        <div class="tile__title">
+                                            Top Gear
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="tile">
+                                    <div class="tile__media">
+                                        <img class="tile__img"
+                                            src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/70390/show-12.jpg"
+                                            alt="" />
+                                    </div>
+                                    <div class="tile__details">
+                                        <div class="tile__title">
+                                            Top Gear
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="tile">
+                                    <div class="tile__media">
+                                        <img class="tile__img"
+                                            src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/70390/show-13.jpg"
+                                            alt="" />
+                                    </div>
+                                    <div class="tile__details">
+                                        <div class="tile__title">
+                                            Top Gear
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="tile">
+                                    <div class="tile__media">
+                                        <img class="tile__img"
+                                            src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/70390/show-14.jpg"
+                                            alt="" />
+                                    </div>
+                                    <div class="tile__details">
+                                        <div class="tile__title">
+                                            Top Gear
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="tile">
+                                    <div class="tile__media">
+                                        <img class="tile__img"
+                                            src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/70390/show-15.jpg"
+                                            alt="" />
+                                    </div>
+                                    <div class="tile__details">
+                                        <div class="tile__title">
+                                            Top Gear
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="tile">
+                                    <div class="tile__media">
+                                        <img class="tile__img"
+                                            src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/70390/show-16.jpg"
+                                            alt="" />
+                                    </div>
+                                    <div class="tile__details">
+                                        <div class="tile__title">
+                                            Top Gear
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="tile">
+                                    <div class="tile__media">
+                                        <img class="tile__img"
+                                            src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/70390/show-17.jpg"
+                                            alt="" />
+                                    </div>
+                                    <div class="tile__details">
+                                        <div class="tile__title">
+                                            Top Gear
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="tile">
+                                    <div class="tile__media">
+                                        <img class="tile__img"
+                                            src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/70390/show-18.jpg"
+                                            alt="" />
+                                    </div>
+                                    <div class="tile__details">
+                                        <div class="tile__title">
+                                            Top Gear
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="tile">
+                                    <div class="tile__media">
+                                        <img class="tile__img"
+                                            src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/70390/show-19.jpg"
+                                            alt="" />
+                                    </div>
+                                    <div class="tile__details">
+                                        <div class="tile__title">
+                                            Top Gear
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row datos mt-4" style="display: none;">
+                        <div class="col-sm-12">
+                            <div class="card" style="background: rgba(0,0,0,0);">
+                                <div class="card-body text-primary text-left">
+                                    <div class="d-inline-block float-right">
+                                        <a class="r atras"><i class="feather-lg text-danger"
+                                                data-feather="x-circle"></i></a>
+                                    </div>
+                                    <h1 class="text-white text-center">Bad Boys 3</h1>
+                                    <h5 class="text-warning text-center">Cabalgamos juntos. Morimos juntos.</h5>
+                                    <span>Dos Policias Rebeldes 3</span><br>
+                                    <small class="float-right text-navy text-white fh">25 Septiembre 2020</small>
+                                    <small class="text-muted">Accion-Crimen-Comedia</small><br>
+                                    <small>El Departamento de Policía de Miami y su equipo de élite AMMO intentan
+                                        derribar a Armando Armas, jefe de un cartel de la droga. Armando es un asesino
+                                        de sangre fría con una naturaleza viciosa y contaminante. Él está comprometido
+                                        con el trabajo del cartel y es enviado por su madre Isabel, para matar a
+                                        Mike.</small>
+                                    <br>
+                                    <div class="text-center">
+                                        <div class="d-inline-block mt-2 mr-3">
+                                            <i class="feather-lg text-warning" data-feather="activity"></i>
+                                        </div>
+                                        <div class="d-inline-block mt-2 mr-3">
+                                            <i class="feather-lg text-warning" data-feather="activity"></i>
+                                        </div>
+                                        <div class="d-inline-block mt-2 mr-3">
+                                            <i class="feather-lg text-warning" data-feather="activity"></i>
+                                        </div>
+                                        <div class="d-inline-block mt-2 mr-3">
+                                            <i class="feather-lg text-warning" data-feather="activity"></i>
+                                        </div>
+                                    </div><br>
+                                    <button class="float-right btn btn-sm btn-outline-warning">Trailer</button>
+                                    <button class="float-right btn btn-sm btn-outline-primary mr-3">Reproducir</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- partial -->
+                </div>
+            </div>
+        </div>
+        <!--w600_and_h900_bestv2        w533_and_h300_bestv2-->
+        <input id="lista" type="hidden" value="{{file}}">
+        {{#each file}}
+        <div class="lista">
+            <input class="ids" type="hidden" value="{{id}}">
+            <input class="titulo" type="hidden" value="{{title}}">
+            <input class="imagen" type="hidden" value="{{imagen}}">
+            <input class="trailer" type="hidden" value="{{trailer}}">
+            <input class="ruta" type="hidden" value="{{file}}">
+        </div>
+        {{/each}}
+        {{#each datos}}
+        <div class="body">
+            <strong class="h3 text-white">{{genero}}</strong>
+            <div class="contain 1">
+                <input type="hidden" class="px" value="0">
+                <input type="hidden" class="ctn" value="0">
+                <div class="btn prev">D</div>
+                <div class="btn next">A</div>
+                <div class="row">
+                    <div class="row__inner">
+                        {{#each pelis}}
+                        <div class="tile">
+                            <div class="tile__media">
+                                <img class="tile__img" src="{{poster}}" alt="" />
+                            </div>
+                            <input class="poster2" type="hidden" value="{{poster2}}">
+                            <input class="titulouno" type="hidden" value="{{titulouno}}">
+                            <input class="titulodos" type="hidden" value="{{titulodos}}">
+                            <input class="fecha" type="hidden" value="{{fecha}}">
+                            <input class="sesiones" type="hidden" value="{{sesiones}}">
+                            <input class="sinopsis" type="hidden" value="{{sinopsis}}">
+                            <input class="slogan" type="hidden" value="{{slogan}}">
+                            <input class="id" type="hidden" value="{{id}}">
+                            <input class="trailer3" type="hidden" value="{{trailer}}">
+                            <div class="tile__details">
+                                <div class="tile__title"></div>
+                            </div>
+                        </div>
+                        {{/each}}
+                    </div>
+                </div>
+            </div>
+            <div class="row datos mt-4" style="display: none;">
+                <div class="col-sm-12">
+                    <div class="card" style="background: rgba(0,0,0,0);">
+                        <div class="card-body text-primary text-left">
+                            <div class="d-inline-block float-right">
+                                <a class="r cerrarsinopsis"><i class="feather-lg text-danger" data-feather="x-circle"></i></a>
+                            </div><br><br>
+                            <h1 class="text-white text-center titulouno2"></h1>
+                            <h5 class="text-warning text-center slogan2"></h5>
+                            <span class="titulodos2"></span><br>
+                            <small class="float-right text-navy text-white fh2"></small>
+                            <small class="text-muted sesiones2"></small><br>
+                            <small class="sinopsis2"></small>
+                            <br>
+                            <div class="text-center">
+                                <div class="d-inline-block mt-2 mr-3">
+                                    <i class="feather-lg text-warning" data-feather="activity"></i>
+                                </div>
+                                <div class="d-inline-block mt-2 mr-3">
+                                    <i class="feather-lg text-warning" data-feather="activity"></i>
+                                </div>
+                                <div class="d-inline-block mt-2 mr-3">
+                                    <i class="feather-lg text-warning" data-feather="activity"></i>
+                                </div>
+                                <div class="d-inline-block mt-2 mr-3">
+                                    <i class="feather-lg text-warning" data-feather="activity"></i>
+                                </div>
+                            </div><br>
+                            <input class="trailer4" type="hidden" value="">
+                            <input class="id2" type="hidden" value="">
+                            <button class="float-right btn btn-sm btn-outline-warning btn-trailer">Trailer</button>
+                            <button class="float-right btn btn-sm btn-outline-primary mr-3 btn-play">Reproducir</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {{/each}}
+    </div>
+</main>
+<div class="modal fade" id="ModalPelis" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content" style="background: rgba(0,0,0,0);">
+            <div class="row">
+                <div class="col-sm-12 text-center">
+                    <div class="" id="player" style="position: relative;"></div>
+                    <div class="d-inline-block float-right" style="position: relative; bottom: 97%; left: 2%;">
+                        <a class="r cerrartrailer"><i class="feather-lg" data-feather="x-circle"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

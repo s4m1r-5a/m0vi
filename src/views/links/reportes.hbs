@@ -1,0 +1,262 @@
+<!--<tr class="table-primary"></tr>
+<tr class="table-success"></tr>-->
+
+<input type="hidden" id="usuarioadmin" value="{{user.admin}}">
+
+<div class="row" id="cuadro1">
+    <div class="col-xl-12">
+        <div class="card">
+            <div class="card-header">
+                <div class="d-inline-block float-right">
+                    <a class="r atras" id="quitartodo" style="display: none;"><i class="feather-lg"
+                            data-feather="x-circle"></i></a>
+                </div>
+                <div class="d-inline-block float-left">
+                    <button class="btn btn-outline-dark" id="cuentadecobro" style="display: none;">Enviar
+                        cuenta</button>
+                </div>
+            </div>
+            <div class="card-body">
+                <table id="datatable2" class="table table-sm table-striped table-hover display" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>ID</th>
+                            <th>Fecha</th>
+                            <th>Pin</th>
+                            <th>Cliente</th>
+                            <th>Cajero</th>
+                            <th>Producto</th>
+                            <th>Email</th>
+                            <th>FechaA</th>
+                            <th>FechaV</th>
+                            <th>Movil</th>
+                            <th>Anulada</th>
+                            <th>Descripcion</th>
+                            <th>Rstbcr</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+                <div class="row mt-4">
+                    <div id="tablaprecio" class="col-12 col-sm-12 col-md-6">
+                        <table id="datatable4" class="table table-sm table-striped table-hover display nowrap"
+                            style="width:100%">
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    <th>id:</th>
+                                    <th>fechadecompra:</th>
+                                    <th>cliente:</th>
+                                    <th>cajero</th>
+                                    <th>producto:</th>
+                                    <th>rango:</th>
+                                    <th>precio:</th>
+                                    <th>utld:</th>
+                                    <th>comi:</th>
+                                    <th>neta:</th>
+                                    <!--<th style="width:2%;" data-priority="2">neta:</th>-->
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                    <div class="col-12 col-sm-12 col-md-6">
+                        <table id="datatable3" class="table table-sm table-striped table-hover display nowrap"
+                            style="width:100%">
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    <th style="width:1%;">Id</th>
+                                    <th style="width:3%;">Fecha</th>
+                                    <th style="width:2%;">Benefactor</th>
+                                    <th style="width:2%;">Adquisidor</th>
+                                    <th style="width:2%;" data-priority="1">Monto</th>
+                                    <th style="width:1%;">Metodo</th>
+                                    <th style="width:1%;">Recarga</th>
+                                    <th style="width:3%;">Activa</th>
+                                    <th style="width:2%;">Saldo</th>
+                                    <th style="width:1%;">N° Ventas</th>
+                                    <th style="width:1%;" data-priority="2">Estado</th>
+                                    <th style="width:1%;" data-priority="10000">Recibo</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- BEGIN primary modal -->
+<div class="modal fade" id="ModalOrden" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-md" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+                    &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</h5>
+                <div class="d-inline-block mt-1 mr-3 mb-0 float-right">
+                    <a class="r" data-dismiss="modal" aria-label="Close">
+                        <i class="feather mr-0" data-feather="x"></i></a>
+                </div>
+            </div>
+            <div class="modal-body m-1">
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="row justify-content-between mb-1">
+                            <div class="col-12">
+                                <div class="mb-4">
+                                    <i class="feather-md text-primary mr-0" data-feather="mail"></i>
+                                    <select class="form-control-no-border edi" id="seleccionaproveedor"
+                                        style="width: 80%; padding: 1px;">
+                                        <option value="">Seleccionar Proveedor</option>
+                                        {{#each proveedores}}
+                                        <option value="{{id}}">{{nombre}}</option>
+                                        {{/each}}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="mb-4">
+                                    <i class="feather-md text-primary mr-0" data-feather="mail"></i>
+                                    <input class="form-control-no-border edi" type="text" placeholder="Correo..."
+                                        id="correo" autocomplete="off" style="width: 80%; padding: 1px;">
+                                    <div class="progress progress-sm shadow-sm mb-0 reditarh" style="display: none;">
+                                        <div class="progress-bar bg-primary" role="progressbar"
+                                            style="height: 20%; width: 100%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="mb-4">
+                                    <i class="feather-md text-primary mr-0" data-feather="mail"></i>
+                                    <input class="form-control-no-border edi" type="text" placeholder="Contraseña..."
+                                        id="contraseña" autocomplete="off" style="width: 80%; padding: 1px;">
+                                    <div class="progress progress-sm shadow-sm mb-0 reditarh" style="display: none;">
+                                        <div class="progress-bar bg-primary" role="progressbar"
+                                            style="height: 20%; width: 100%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <input type="hidden" id="idsms" value="">
+                    <input type="hidden" id="cliente" value="">
+                    <input type="hidden" id="cels" value="">
+                    <input type="hidden" id="nombrec" value="">
+                    <input type="hidden" id="plan" value="">
+                    <input type="hidden" id="fechadeactivacion" value="">
+                    <input type="hidden" id="fechadevencimiento" value="">
+                    <div class="col-md-4">
+                        <div class="text-center">
+                            <img alt="Chris Wood" id="car" src="/img/car.jpg" class="rounded-circle img-responsive mt-2"
+                                width="128" height="128" />
+                            <small id="marka"></small>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="mb-1">
+                            <i class="feather-md text-primary mr-0" data-feather="align-left"
+                                style="margin-top: -10.5%;"></i>
+                            <textarea id="smsdescripcion" class="form-control-no-border edi"
+                                placeholder="Deja en claro cualquier observacio que tengas..." name="descripcion"
+                                cols="60" rows="2" autocomplete="off" data-toggle="tooltip" data-placement="top"
+                                data-container="body" title="Ingresa el SMS que le llegara al cliente"
+                                style="width: 90%;"
+                                maxlength="94">para mas información escríbenos al 3012673944 Whatsapp. RedFlix</textarea>
+                            <div class="progress progress-sm shadow-sm mb-0 reditarh" style="display: none;">
+                                <div class="progress-bar bg-primary" role="progressbar"
+                                    style="height: 20%; width: 100%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--fin del body modal  style="display: none;"-->
+            <div class="modal-footer editar">
+                <a class="r mr-2 h4">Cancelar</a>
+                <a class="r mr-2 h4" id="guardarOrden">Enviar</a>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- BEGIN primary modal -->
+<div class="modal fade" id="CuentaCobro" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-sm" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="media mb-2">
+                    <img src="/img/pp.jpg" width="40" height="36" class="rounded-circle mr-1 img" alt="Ashley Briggs">
+                    <div class="media-body">
+                        <small class="text-muted" id="nomvend"></small>
+                        <br>
+                        <small class="text-muted" id="rango"></small>
+                    </div>
+                    <input type="hidden" id="idcontratista">
+                </div>
+                <div class="d-inline-block mt-1 mr-3 mb-0 float-right">
+                    <a class="r" data-dismiss="modal" aria-label="Close">
+                        <i class="feather mr-0" data-feather="x"></i></a>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="row justify-content-between mb-1">
+                    <div class="col-12">
+                        <table class="table table-sm">
+                            <tbody>
+                                <tr>
+                                    <th>
+                                        <i class="feather-md" data-feather="phone-forwarded"></i>
+                                        MOVIL
+                                    </th>
+                                    <th>
+                                        <div class="text-center">
+                                            <input class="form-control-no-border text-center edi" id="celular"
+                                                autocomplete="off" type="text" placeholder="Movil del contraista"
+                                                style="padding: 1px; width: 100%; background-color: #FFFFCC;"
+                                                data-mask="000-000-0000" data-mask-selectonfocus="true" required>
+                                            <div class="progress progress-sm shadow-sm reditarh" style="display: none;">
+                                                <div class="progress-bar bg-primary" role="progressbar"
+                                                    style="height: 20%; width: 100%"></div>
+                                            </div>
+                                        </div>
+                                    </th>
+                                </tr>
+                                <tr>
+                                    <th>
+                                        <i class="feather-md" data-feather="mail"></i>
+                                        SMS ADICIONAL
+                                    </th>
+                                    <td>
+                                        <div class="text-center">
+                                            <textarea id="smsdescripcion" class="form-control-no-border edi"
+                                                placeholder="Deja aqui un mensaje si quieres decir algo adicional a la cuenta"
+                                                name="mensaje" cols="60" rows="2" autocomplete="off"
+                                                style="width: 100%; background-color: #FFFFCC;"
+                                                maxlength="94"></textarea>
+                                            <div class="progress progress-sm shadow-sm reditarh" style="display: none;">
+                                                <div class="progress-bar bg-primary" role="progressbar"
+                                                    style="height: 20%; width: 100%">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <!--data-toggle="tooltip"
+                        data-placement="top" data-container="body"
+                        title="Ingresa el SMS que le llegara al cliente"-->
+                </div>
+            </div>
+            <div class="modal-footer editar">
+                <button type="reset" class="float-right btn btn-sm btn-outline-danger">Cancelar</button>
+                <button id="enviarcuenta" class="float-right btn btn-sm btn-outline-info">Enviar</button>
+            </div>
+        </div>
+    </div>
+</div>
