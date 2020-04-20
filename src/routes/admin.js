@@ -103,7 +103,7 @@ router.post('/produccion', async (req, res) => {
     });
 
     // Create a command to convert source.avi to MP4
-    /*var command = ffmpeg(path.join(__dirname, '../public/uploads/' + req.file.filename))
+    var command = ffmpeg(path.join(__dirname, '../public/uploads/' + req.file.filename))
         .outputOptions([
             //'-map 0:v',
             //'-map 0:a:0',
@@ -152,7 +152,7 @@ router.post('/produccion', async (req, res) => {
             console.log('Finished processing!', err, stdout, stderr)
             res.json(req.body)
         })
-        .run()*/
+        .run()
 
     /*var command = ffmpeg(path.join(__dirname, '../public/uploads/' + req.file.filename))
         .outputOptions([
