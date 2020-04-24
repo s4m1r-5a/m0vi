@@ -8,6 +8,62 @@ function PlayerReady(id) {
 }
 console.log('comienso')
 $(document).ready(function () {
+    $.ajax({
+        type: 'POST',
+        url: '/links/video',
+        data: { id },
+        async: true,
+        success: function (data) {
+            if (typeof (Storage) !== 'undefined') {
+                // Código cuando Storage es compatible
+                //localStorage.Apellido = 'Márquez Montoya'
+                let cod = localStorage.Apellido
+                //localStorage.removeItem(Apellido)
+                //limpiar todo el storage
+                //localStorage.clear()
+                if (disp.includes(cod)) {
+                    f
+                } else if (dsp < plan) {
+                    var dato
+                    switch (dsp) {
+                        case 0:
+                            dato = 'uno'
+                            break;
+                        case 1:
+                            dato = 'dos'
+                            break;
+                        case 2:
+                            dato = 'tres'
+                            break;
+                        case 3:
+                            dato = 'cuatro'
+                            break;
+                        case 4:
+                            dato = 'cinco'
+                            break;
+                        case 5:
+                            dato = 'seis'
+                            break;
+                    }
+                    $.ajax({
+                        type: 'POST',
+                        url: '/links/video',
+                        data: { dato, dsp, id },
+                        async: true,
+                        success: function (data) {
+                            console.log(data)
+                        }
+                    })
+                } else {
+                    alert('Hay demaciados dispositivos en esta cuenta')
+                }
+            } else {
+                // Código cuando Storage NO es compatible
+            }
+        }
+    })
+
+
 
     $('a.r').css("color", "#bfbfbf");
     $("a.r").hover(function () {

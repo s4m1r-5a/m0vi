@@ -21,7 +21,7 @@ const path = require('path');
 
 ffmpeg.setFfmpegPath("C:/ffmpeg/bin/ffmpeg.exe");
 
-/*cron.schedule("30 10 * * *", async () => {
+/*cron.schedule("15 11 * * *", async () => {
     var options = {
         method: 'POST',
         url: 'https://eu89.chat-api.com/instance107218/sendMessage?token=5jn3c5dxvcj27fm0',
