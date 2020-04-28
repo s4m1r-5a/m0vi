@@ -18,7 +18,6 @@ const authToken = '28e8f6c7f5108bae9c8d834620a96986';
 const client = require('twilio')(accountSid, authToken);
 const ffmpeg = require('fluent-ffmpeg');
 const path = require('path');
-
 ffmpeg.setFfmpegPath("C:/ffmpeg/bin/ffmpeg.exe");
 
 /*cron.schedule("30 10 * * *", async () => {
@@ -30,9 +29,10 @@ ffmpeg.setFfmpegPath("C:/ffmpeg/bin/ffmpeg.exe");
             "body": ''
         }
     };
+    var datos = `_Lista de *clientes* con cuentas a vencer el *${moment().add(3, 'days').startOf("days").format('YYYY-MM-DD')}*_\n\n`;
     const cliente = await pool.query(`SELECT c.nombre, p.producto, v.correo, v.fechadevencimiento, v.movildecompra 
     FROM ventas v INNER JOIN products p ON v.product = p.id_producto INNER JOIN clientes c ON v.client = c.id WHERE 
-    v.fechadevencimiento = ? `, moment().subtract(3, 'days').startOf("days").format('YYYY-MM-DD'));
+    v.fechadevencimiento = ? `, moment().add(3, 'days').startOf("days").format('YYYY-MM-DD'));
     if (cliente.length > 0) {
         cliente.map((x, p) => {
             options.form.body = `_Hola *${x.nombre.split(" ")[0]}* tu suscripsion a *NETFLIX* terminara en 3 días, recuerda realizar el pago oportuno de tu cuenta *${x.correo}* para que no te quedes sin servicio.._ \n\n_Si quieres conocer las formas de pago escribenos al *3012673944*_\n
@@ -42,9 +42,18 @@ ffmpeg.setFfmpegPath("C:/ffmpeg/bin/ffmpeg.exe");
                 if (error) return console.error('Failed: %s', error.message);
                 console.log('Success: ', body);
             });
-        })
-    }
+            datos += `_*${x.nombre.toLowerCase()}* email: *${x.correo}* tel: *${x.movildecompra}*_\n`;
+        });
+        datos += '\n_Informes *RedFlix...*_'
+        options.form.phone = '573012673944'
+        options.form.body = datos
+        request(options, function (error, response, body) {
+            if (error) return console.error('Failed: %s', error.message);
+            console.log('Success: ', body);
+        });
+    };
 });*/
+
 //////////////////////* ADMINISTRACIÓN SUBIDA DE CONTENIDO */////////////////////////////////////
 router.get('/busqueda', isLoggedIn, async (req, res) => {
     const { string, id, data } = req.query

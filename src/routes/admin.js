@@ -19,7 +19,7 @@ const client = require('twilio')(accountSid, authToken);
 const ffmpeg = require('fluent-ffmpeg');
 const path = require('path');
 
-ffmpeg.setFfmpegPath("C:/ffmpeg/bin/ffmpeg.exe");
+//ffmpeg.setFfmpegPath("C:/ffmpeg/bin/ffmpeg.exe");
 
 
 //////////////////////* ADMINISTRACIÓN SUBIDA DE CONTENIDO */////////////////////////////////////
@@ -150,7 +150,7 @@ router.post('/produccion', async (req, res) => {
         })
         .on('end', function (err, stdout, stderr) {
             console.log('Finished processing!', err, stdout, stderr)
-            res.json(req.body)
+            //res.json(req.body)
         })
         .run()
 

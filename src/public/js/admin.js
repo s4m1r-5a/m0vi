@@ -143,7 +143,7 @@ if (window.location.pathname == `/admin/produccion`) {
             playerP.api("play", $(this).val());
         })
 
-        $('form').submit(function (e) {
+        /*$('form').submit(function (e) {
             e.preventDefault();
             alert('kjdkldjl')
             var fd = $('form').serialize();
@@ -156,6 +156,6 @@ if (window.location.pathname == `/admin/produccion`) {
                     console.log(data)
                 }
             })
-        })
+        })*/
     });
 }

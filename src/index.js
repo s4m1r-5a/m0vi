@@ -74,7 +74,7 @@ app.use(multer({
     }
     cb("Error: File upload only supports the following filetypes - " + filetypes);
   },
-  limits: { fileSize: 2062191114 },
+  //limits: { fileSize: 2062191114 },
 }).single('image'));
 
 
