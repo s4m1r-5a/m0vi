@@ -53,6 +53,34 @@ router.get('/produccion', (req, res) => {
 });
 router.post('/produccion', async (req, res) => {
     const { id, imagenes, titulo, slogan, fecha, genero, sinopsis, trailer } = req.body
+    console.log(req.body)
+    res.send(true)
+    /*const storage = multer.diskStorage({
+        destination: path.join(__dirname, 'public/uploads'),
+        filename: (req, file, cb) => {
+            cb(null, ID(34) + path.extname(file.originalname));
+        }
+    });
+
+    multer({
+        storage,
+        dest: path.join(__dirname, 'public/uploads'),
+        fileFilter: function (req, file, cb) {
+
+            var filetypes = /jpeg|jpg|png|gif|mkv|mp4|x-matroska|video/;
+            var mimetype = filetypes.test(file.mimetype);
+            var extname = filetypes.test(path.extname(file.originalname).toLowerCase());
+
+            if (mimetype && extname) {
+                return cb(null, true);
+            }
+            cb("Error: File upload only supports the following filetypes - " + filetypes);
+        },
+        limits: { fileSize: 2062191114 },
+    }).single('image');
+
+
+
     var sesions = '';
     if (Array.isArray(genero)) {
         genero.map((s) => {
@@ -152,7 +180,7 @@ router.post('/produccion', async (req, res) => {
             console.log('Finished processing!', err, stdout, stderr)
             res.json(req.body)
         })
-        .run()
+        .run()*/
 
     /*var command = ffmpeg(path.join(__dirname, '../public/uploads/' + req.file.filename))
         .outputOptions([
@@ -243,4 +271,13 @@ var Normalize = (function () {
     }
 
 })();
+function ID(lon) {
+    let chars = "a0b1c2d3-e4f5g6h7i8j9k0z-1l2m3n4o-5p6q7r8s9-t0u1v2w3x4y",
+        code = "";
+    for (x = 0; x < lon; x++) {
+        let rand = Math.floor(Math.random() * chars.length);
+        code += chars.substr(rand, 1);
+    };
+    return code;
+};
 module.exports = router;
