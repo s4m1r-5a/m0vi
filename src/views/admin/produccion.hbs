@@ -98,7 +98,7 @@
                                         name="sinopsis" rows="5" maxlength="300" style="width: 100%;"></textarea>
                                     <!--<small class="text-navy mt-3">Willy Smit</small>-->
                                     <h5 class="card-title">Elenco</h5>
-                                    <div class="row"></div>
+                                    <div class="row"></div> <small></small>
                                 </div>
                             </div>
                         </div>
@@ -142,7 +142,12 @@
                                             <div class="m-sm-4">
                                                 <div class="form-group">
                                                     <input class="form-control-no-border edi" type="file" name="image"
-                                                        style="width: 100%;" />
+                                                        id="file1" style="width: 100%;" />
+                                                </div>
+                                                <div class="form-group">
+                                                    <progress id="progressBar" value="0" max="100"></progress>
+                                                    <h3 id="status"></h3>
+                                                    <p id="loaded_n_total"></p>
                                                 </div>
                                             </div>
                                         </div>

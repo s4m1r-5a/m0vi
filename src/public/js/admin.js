@@ -3,6 +3,30 @@
 //const moment = require("moment");
 
 ////////////////* Carga de Peliculas */////////////////////
+function SMSj2(tipo, titulo, mensaje) {
+    var message = mensaje;
+    var title = titulo;
+    var type = tipo;
+    toastr[type](message, title, {
+        closeButton: true,
+        rtl: $("body").attr("dir") === "rtl" || $("html").attr("dir") === "rtl",
+        debug: false,
+        newestOnTop: false,
+        progressBar: false,
+        positionClass: "toast-top-right",
+        preventDuplicates: false,
+        onclick: null,
+        showDuration: "300",
+        hideDuration: "1000",
+        timeOut: 0,
+        extendedTimeOut: 0,
+        showEasing: "swing",
+        hideEasing: "linear",
+        showMethod: "fadeIn",
+        hideMethod: "fadeOut",
+        tapToDismiss: false
+    });
+};
 if (window.location.pathname == `/admin/produccion`) {
     //Buscador
     $(document).ready(function () {
@@ -143,19 +167,62 @@ if (window.location.pathname == `/admin/produccion`) {
             playerP.api("play", $(this).val());
         })
 
-        /*$('form').submit(function (e) {
+        $('form').on('submit', function (e) {
             e.preventDefault();
-            alert('kjdkldjl')
-            var fd = $('form').serialize();
-            $.ajax({
+            var a = $('input[name="id"]').val();
+            SMSj2('success', $('.titulo2').val(),
+                `<div class="form-group">
+                    <progress id="progressBar${a}" value="0" max="100" style="width: 100%;"></progress>
+                    <small id="status${a}"></small><br>
+                    <small id="loaded_n_total${a}"></small><br>
+                    <small id="loaded_n${a}"></small>
+                </div>`)
+            var ajax = new XMLHttpRequest();
+            ajax.upload.addEventListener("progress", (event) => {
+                _(`loaded_n_total${a}`).innerHTML = "Cargando " + event.loaded + " bytes";
+                _(`loaded_n${a}`).innerHTML = "Total bytes" + event.total;
+                var percent = (event.loaded / event.total) * 100;
+                _(`progressBar${a}`).value = Math.round(percent);
+                _(`status${a}`).innerHTML = Math.round(percent) + "% arriba... por favor espere";
+            }, false);
+            ajax.addEventListener("load", (event) => {
+                _(`status${a}`).innerHTML = event.target.responseText;
+                _(`progressBar${a}`).value = 0;
+            }, false);
+            ajax.addEventListener("error", (event) => {
+                _(`status${a}`).innerHTML = "Carga Fallida";
+            }, false);
+            ajax.addEventListener("abort", (event) => {
+                _(`status${a}`).innerHTML = "Carga Abortada";
+            }, false);
+            ajax.open("POST", "/admin/produccion");
+            ajax.send(new FormData(this));
+            /*$.ajax({
                 type: 'POST',
                 url: '/admin/produccion',
-                data: fd,
+                contentType: false,
+                data: new FormData(this),
+                processData: false,
+                cache: false,
                 //async: false,
                 success: function (data) {
                     console.log(data)
                 }
-            })
-        })*/
+            })*/
+        })
+
+        function _(el) {
+            return document.getElementById(el);
+        }
+        /*function completeHandler(event) {
+            _("status").innerHTML = event.target.responseText;
+            _("progressBar").value = 0;
+        }
+        function errorHandler(event) {
+            _("status").innerHTML = "Upload Failed";
+        }
+        function abortHandler(event) {
+            _("status").innerHTML = "Upload Aborted";
+        }*/
     });
 }

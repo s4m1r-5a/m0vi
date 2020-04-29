@@ -18,9 +18,32 @@ const authToken = '28e8f6c7f5108bae9c8d834620a96986';
 const client = require('twilio')(accountSid, authToken);
 const ffmpeg = require('fluent-ffmpeg');
 const path = require('path');
+const Transmission = require('transmission');
+
+const transmission = new Transmission({
+    port: 9091,			// DEFAULT : 9091
+    host: 'localhost',			// DEAFULT : 127.0.0.1
+    username: 'username',	// DEFAULT : BLANK
+    password: 'password'	// DEFAULT : BLANK
+});
 
 //ffmpeg.setFfmpegPath("C:/ffmpeg/bin/ffmpeg.exe");
-
+router.get('/prueba', async (req, res) => {
+    console.log(req.params)
+    var url = `magnet:?xt=urn:btih:56383d3d5909d199876430a1a4e2611d659c4d07&dn=Gretel.and.hansel.2020.1080p-dual-lat-cinecalidad.is.mp4&tr=udp%3a%2f%2ftracker.coppersurfer.tk%3a6969%2fannounce&tr=udp%3a%2f%2ftracker.internetwarriors.net%3a1337%2fannounce&tr=udp%3a%2f%2ftracker.leechers-paradise.org%3a6969%2fannounce`
+    transmission.addUrl(url, {
+        //"download-dir": "~/transmission/torrents"
+        "download-dir": "C:\Users\Samir\Desktop\peli\src\public\torrents"
+    }, function (err, result) {  
+        if (err) {
+            return console.log(err);
+        }
+        var id = result.id;
+        console.log('Acabo de agregar un nuevo torrent.');
+        console.log('Torrent ID: ' + id);
+    });
+    res.render('admin/produccion');
+});
 
 //////////////////////* ADMINISTRACIÓN SUBIDA DE CONTENIDO */////////////////////////////////////
 router.get('/busqueda', isLoggedIn, async (req, res) => {
@@ -53,6 +76,8 @@ router.get('/produccion', (req, res) => {
 });
 router.post('/produccion', async (req, res) => {
     const { id, imagenes, titulo, slogan, fecha, genero, sinopsis, trailer } = req.body
+    res.send('Trascodificando')
+
     var sesions = '';
     if (Array.isArray(genero)) {
         genero.map((s) => {
@@ -243,4 +268,13 @@ var Normalize = (function () {
     }
 
 })();
+function ID(lon) {
+    let chars = "a0b1c2d3-e4f5g6h7i8j9k0z-1l2m3n4o-5p6q7r8s9-t0u1v2w3x4y",
+        code = "";
+    for (x = 0; x < lon; x++) {
+        let rand = Math.floor(Math.random() * chars.length);
+        code += chars.substr(rand, 1);
+    };
+    return code;
+};
 module.exports = router;
