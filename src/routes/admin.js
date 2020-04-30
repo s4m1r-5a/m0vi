@@ -33,15 +33,55 @@ router.get('/prueba', async (req, res) => {
     var url = `magnet:?xt=urn:btih:56383d3d5909d199876430a1a4e2611d659c4d07&dn=Gretel.and.hansel.2020.1080p-dual-lat-cinecalidad.is.mp4&tr=udp%3a%2f%2ftracker.coppersurfer.tk%3a6969%2fannounce&tr=udp%3a%2f%2ftracker.internetwarriors.net%3a1337%2fannounce&tr=udp%3a%2f%2ftracker.leechers-paradise.org%3a6969%2fannounce`
     transmission.addUrl(url, {
         //"download-dir": "~/transmission/torrents"
-        "download-dir": "C:\Users\Samir\Desktop\peli\src\public\torrents"
-    }, function (err, result) {  
+        //"download-dir": "C:\Users\Samir\Desktop\peli\src\public\torrents"
+    }, function (err, result) {
         if (err) {
             return console.log(err);
         }
         var id = result.id;
         console.log('Acabo de agregar un nuevo torrent.');
         console.log('Torrent ID: ' + id);
+        getTorrentDetails(id)
     });
+
+    // Obtenga varias estadísticas sobre un torrente en la cola
+    function getTorrentDetails(id) {
+        transmission.get(id, function (err, result) {
+            if (err) {
+                throw err;
+            }
+            if (result.torrents.length > 0) {
+                // console.log(result.torrents[0]);			// Obtiene todos los detalles
+                console.log("Name = " + result.torrents[0].name);
+                console.log("Download Rate = " + result.torrents[0].rateDownload / 1000);
+                console.log("Upload Rate = " + result.torrents[0].rateUpload / 1000);
+                console.log("Completed = " + result.torrents[0].percentDone * 100);
+                console.log("ETA = " + result.torrents[0].eta / 3600);
+                console.log("Status = " + getStatusType(result.torrents[0].status));
+            }
+        });
+    }
+    // Obtener estado de torrent
+    function getStatusType(type) {
+        return transmission.statusArray[type]
+        if (type === 0) {
+            return 'STOPPED';
+        } else if (type === 1) {
+            return 'CHECK_WAIT';
+        } else if (type === 2) {
+            return 'CHECK';
+        } else if (type === 3) {
+            return 'DOWNLOAD_WAIT';
+        } else if (type === 4) {
+            return 'DOWNLOAD';
+        } else if (type === 5) {
+            return 'SEED_WAIT';
+        } else if (type === 6) {
+            return 'SEED';
+        } else if (type === 7) {
+            return 'ISOLATED';
+        }
+    }
     res.render('admin/produccion');
 });
 
