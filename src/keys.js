@@ -9,10 +9,10 @@ module.exports = {
     },*/
     database: {
         connectionLimit: 1000,
-        host: '213.190.6.64',
-        user: 'u152781536_sa',
-        password: 'cinetflix',
-        database: 'u152781536_depeli'
+        host: 'localhost',
+        user: 'samir',
+        password: 'Abcd1234@',
+        database: 'iux'
     },
     /*database: {
         connectionLimit: 1000,

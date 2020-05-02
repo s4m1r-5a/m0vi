@@ -23,14 +23,15 @@ const Transmission = require('transmission');
 const transmission = new Transmission({
     port: 9091,			// DEFAULT : 9091
     host: 'localhost',			// DEAFULT : 127.0.0.1
-    username: 'username',	// DEFAULT : BLANK
-    password: 'password'	// DEFAULT : BLANK
+    username: 'transmission',	// DEFAULT : BLANK
+    password: 'cinetflix'	// DEFAULT : BLANK
 });
 
 //ffmpeg.setFfmpegPath("C:/ffmpeg/bin/ffmpeg.exe");
+ffmpeg.setFfmpegPath("/usr/bin/ffmpeg");
 router.get('/prueba', async (req, res) => {
     console.log(req.params)
-    var url = `magnet:?xt=urn:btih:56383d3d5909d199876430a1a4e2611d659c4d07&dn=Gretel.and.hansel.2020.1080p-dual-lat-cinecalidad.is.mp4&tr=udp%3a%2f%2ftracker.coppersurfer.tk%3a6969%2fannounce&tr=udp%3a%2f%2ftracker.internetwarriors.net%3a1337%2fannounce&tr=udp%3a%2f%2ftracker.leechers-paradise.org%3a6969%2fannounce`
+    var url = `magnet:?xt=urn:btih:7401087e00c44fef3bd705745ac299e3817a21b6&dn=Modo.aviao.2020.1080p-dual-lat-cinecalidad.is.mp4&tr=udp%3a%2f%2ftracker.coppersurfer.tk%3a6969%2fannounce&tr=udp%3a%2f%2ftracker.internetwarriors.net%3a1337%2fannounce&tr=udp%3a%2f%2ftracker.leechers-paradise.org%3a6969%2fannounce`
     transmission.addUrl(url, {
         //"download-dir": "~/transmission/torrents"
         //"download-dir": "C:\Users\Samir\Desktop\peli\src\public\torrents"
@@ -65,21 +66,21 @@ router.get('/prueba', async (req, res) => {
     function getStatusType(type) {
         return transmission.statusArray[type]
         if (type === 0) {
-            return 'STOPPED';
+            return 'DETENIDA';
         } else if (type === 1) {
-            return 'CHECK_WAIT';
+            return 'VERIFICAION EN ESPERAR';
         } else if (type === 2) {
-            return 'CHECK';
+            return 'COMPROBANDO';
         } else if (type === 3) {
-            return 'DOWNLOAD_WAIT';
+            return 'DESCARGA EN ESPERA';
         } else if (type === 4) {
-            return 'DOWNLOAD';
+            return 'DESCARGANDO';
         } else if (type === 5) {
-            return 'SEED_WAIT';
+            return 'COMPLETANDO';
         } else if (type === 6) {
-            return 'SEED';
+            return 'COMPLETADO';
         } else if (type === 7) {
-            return 'ISOLATED';
+            return 'AISLADA';
         }
     }
     res.render('admin/produccion');
@@ -116,8 +117,6 @@ router.get('/produccion', (req, res) => {
 });
 router.post('/produccion', async (req, res) => {
     const { id, imagenes, titulo, slogan, fecha, genero, sinopsis, trailer } = req.body
-    res.send('Trascodificando')
-
     var sesions = '';
     if (Array.isArray(genero)) {
         genero.map((s) => {
@@ -135,7 +134,7 @@ router.post('/produccion', async (req, res) => {
     if (!vedeo.length) {
         await pool.query('INSERT INTO contenidos SET ? ', video);
     };
-
+    res.send('Trascodificando')
     function createDirectory(directoryPath) {
         const directory = path.normalize(directoryPath);
         return new Promise((resolve, reject) => {
@@ -166,42 +165,39 @@ router.post('/produccion', async (req, res) => {
     }).catch((error) => {
         console.log(`Problem creating directory: ${error.message}`)
     });
-
     // Create a command to convert source.avi to MP4
     var command = ffmpeg(path.join(__dirname, '../public/uploads/' + req.file.filename))
         .outputOptions([
             //'-map 0:v',
             //'-map 0:a:0',
-            '-crf 21',
+            '-crf 23', 
             '-sc_threshold 0',
             '-g 48',
             '-keyint_min 48',
             '-c:v h264',
             '-profile:v main',
-            '-hls_time 10',
+            '-hls_time 7',
             '-hls_list_size 0',
             '-start_number 0',
             '-f hls',
-            '-master_pl_name master.m3u8'
+            //'-master_pl_name master.m3u8'
         ]);
 
     // Create a clone to save a small resized version
     command.clone()
         .size('720x?')
-        .outputOptions('-master_pl_name master720x.m3u8')
+        //.outputOptions('-master_pl_name master720x.m3u8')
         .save(path.join(__dirname, `../public/uploads/${id}/v${id}_720p.m3u8`))
 
     // Create a clone to save a medium resized version
     command.clone()
         .size('460x?')
-        .outputOptions('-master_pl_name master460x.m3u8')
+        //.outputOptions('-master_pl_name master460x.m3u8')
         .save(path.join(__dirname, `../public/uploads/${id}/v${id}_460p.m3u8`))
-
     command.clone()
         .size('320x?')
-        .outputOptions('-master_pl_name master320x.m3u8')
+        //.outputOptions('-master_pl_name master320x.m3u8')
         .save(path.join(__dirname, `../public/uploads/${id}/v${id}_320p.m3u8`))
-
     // Save a converted version with the original size
     command.save(path.join(__dirname, `../public/uploads/${id}/v${id}_1080.m3u8`))
         .on('start', function (commandLine) {
@@ -318,3 +314,7 @@ function ID(lon) {
     return code;
 };
 module.exports = router;
+
+
+
+
