@@ -42,17 +42,7 @@ ffmpeg.setFfmpegPath("/usr/bin/ffmpeg");
 router.get('/prueba', async (req, res) => {
     console.log(req.params)
     var url = `magnet:?xt=urn:btih:7401087e00c44fef3bd705745ac299e3817a21b6&dn=Modo.aviao.2020.1080p-dual-lat-cinecalidad.is.mp4&tr=udp%3a%2f%2ftracker.coppersurfer.tk%3a6969%2fannounce&tr=udp%3a%2f%2ftracker.internetwarriors.net%3a1337%2fannounce&tr=udp%3a%2f%2ftracker.leechers-paradise.org%3a6969%2fannounce`
-    transmission.addUrl(url, {
-        //"download-dir": "~/transmission/torrents"
-        //"download-dir": "C:\Users\Samir\Desktop\peli\src\public\torrents"
-    }, function (err, result) {
-        if (err) {
-            return console.log(err);
-        }
-        var id = result.id;
-        getTorrentDetails(id)
-    });
-
+    
     res.render('admin/produccion');
 });
 
