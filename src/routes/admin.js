@@ -27,6 +27,16 @@ const transmission = new Transmission({
     password: 'cinetflix'	// DEFAULT : BLANK
 });
 
+//Obtenga detalles de todos los torrents actualmente en cola en la aplicación de transmisión
+function getTransmissionStats() {
+    transmission.sessionStats(function (err, result) {
+        if (err) {
+            console.log(err);
+        } else {
+            console.log(result);
+        }
+    });
+}
 //ffmpeg.setFfmpegPath("C:/ffmpeg/bin/ffmpeg.exe");
 ffmpeg.setFfmpegPath("/usr/bin/ffmpeg");
 router.get('/prueba', async (req, res) => {
@@ -40,49 +50,9 @@ router.get('/prueba', async (req, res) => {
             return console.log(err);
         }
         var id = result.id;
-        console.log('Acabo de agregar un nuevo torrent.');
-        console.log('Torrent ID: ' + id);
         getTorrentDetails(id)
     });
 
-    // Obtenga varias estadísticas sobre un torrente en la cola
-    function getTorrentDetails(id) {
-        transmission.get(id, function (err, result) {
-            if (err) {
-                throw err;
-            }
-            if (result.torrents.length > 0) {
-                // console.log(result.torrents[0]);			// Obtiene todos los detalles
-                console.log("Name = " + result.torrents[0].name);
-                console.log("Download Rate = " + result.torrents[0].rateDownload / 1000);
-                console.log("Upload Rate = " + result.torrents[0].rateUpload / 1000);
-                console.log("Completed = " + result.torrents[0].percentDone * 100);
-                console.log("ETA = " + result.torrents[0].eta / 3600);
-                console.log("Status = " + getStatusType(result.torrents[0].status));
-            }
-        });
-    }
-    // Obtener estado de torrent
-    function getStatusType(type) {
-        return transmission.statusArray[type]
-        if (type === 0) {
-            return 'DETENIDA';
-        } else if (type === 1) {
-            return 'VERIFICAION EN ESPERAR';
-        } else if (type === 2) {
-            return 'COMPROBANDO';
-        } else if (type === 3) {
-            return 'DESCARGA EN ESPERA';
-        } else if (type === 4) {
-            return 'DESCARGANDO';
-        } else if (type === 5) {
-            return 'COMPLETANDO';
-        } else if (type === 6) {
-            return 'COMPLETADO';
-        } else if (type === 7) {
-            return 'AISLADA';
-        }
-    }
     res.render('admin/produccion');
 });
 
@@ -116,7 +86,7 @@ router.get('/produccion', (req, res) => {
     res.render('admin/produccion');
 });
 router.post('/produccion', async (req, res) => {
-    const { id, imagenes, titulo, slogan, fecha, genero, sinopsis, trailer } = req.body
+    const { id, imagenes, titulo, slogan, fecha, genero, sinopsis, trailer, url } = req.body
     var sesions = '';
     if (Array.isArray(genero)) {
         genero.map((s) => {
@@ -130,10 +100,25 @@ router.post('/produccion', async (req, res) => {
         id, titulouno: titulo[0], titulodos: titulo[1], imagenes: `${imagenes[0]} - ${imagenes[1]}`,
         slogan, fecha, sesiones: sesions, sinopsis, trailer, ruta: `uploads/${id}/master.m3u8`, estado: 7
     }
+    if (url) {
+        transmission.addUrl(url, {
+            //"download-dir": "~/transmission/torrents"
+            //"download-dir": "C:\Users\Samir\Desktop\peli\src\public\torrents"
+        }, function (err, result) {
+            if (err) {
+                return console.log(err);
+            }
+            video.idt = result.id;
+        });
+    }
     const vedeo = await pool.query('SELECT * FROM contenidos WHERE id = ?', id);
     if (!vedeo.length) {
         await pool.query('INSERT INTO contenidos SET ? ', video);
+    } else {
+        delete video.id
+        await pool.query('UPDATE contenidos SET ? WHERE id = ?', [video, id]);
     };
+
     res.send('Trascodificando')
     function createDirectory(directoryPath) {
         const directory = path.normalize(directoryPath);
@@ -168,38 +153,34 @@ router.post('/produccion', async (req, res) => {
     // Create a command to convert source.avi to MP4
     var command = ffmpeg(path.join(__dirname, '../public/uploads/' + req.file.filename))
         .outputOptions([
-            //'-map 0:v',
-            //'-map 0:a:0',
-            '-crf 23', 
-            '-sc_threshold 0',
-            '-g 48',
-            '-keyint_min 48',
             '-c:v h264',
-            '-profile:v main',
-            '-hls_time 7',
+            '-hls_time 5',
+            '-hls_playlist_type vod',
             '-hls_list_size 0',
             '-start_number 0',
             '-f hls',
-            //'-master_pl_name master.m3u8'
+            '-master_pl_name master.m3u8'
         ]);
-
     // Create a clone to save a small resized version
     command.clone()
         .size('720x?')
-        //.outputOptions('-master_pl_name master720x.m3u8')
+        .outputOptions('-master_pl_name master720.m3u8')
         .save(path.join(__dirname, `../public/uploads/${id}/v${id}_720p.m3u8`))
+    command.clone()
+        .size('480x?')
+        .outputOptions('-master_pl_name master480.m3u8')
+        .save(path.join(__dirname, `../public/uploads/${id}/v${id}_480p.m3u8`))
+    command.clone()
+        .size('360x?')
+        .outputOptions('-master_pl_name master360.m3u8')
+        .save(path.join(__dirname, `../public/uploads/${id}/v${id}_360p.m3u8`))
+    command.clone()
+        .size('240x?')
+        .outputOptions('-master_pl_name master240.m3u8')
+        .save(path.join(__dirname, `../public/uploads/${id}/v${id}_240p.m3u8`))
 
-    // Create a clone to save a medium resized version
-    command.clone()
-        .size('460x?')
-        //.outputOptions('-master_pl_name master460x.m3u8')
-        .save(path.join(__dirname, `../public/uploads/${id}/v${id}_460p.m3u8`))
-    command.clone()
-        .size('320x?')
-        //.outputOptions('-master_pl_name master320x.m3u8')
-        .save(path.join(__dirname, `../public/uploads/${id}/v${id}_320p.m3u8`))
     // Save a converted version with the original size
-    command.save(path.join(__dirname, `../public/uploads/${id}/v${id}_1080.m3u8`))
+    command.save(path.join(__dirname, `../public/uploads/${id}/v${id}_1080p.m3u8`))
         .on('start', function (commandLine) {
             console.log('Spawned Ffmpeg with command: ' + commandLine);
         })
@@ -316,5 +297,47 @@ function ID(lon) {
 module.exports = router;
 
 
+
+
+
+
+function getTorrentDetails(id) {
+    transmission.get(id, function (err, result) {
+        if (err) {
+            throw err;
+        }
+        if (result.torrents.length > 0) {
+            //console.log(result.torrents[0]);			// Obtiene todos los detalles :
+            console.log("Ruta = " + result.torrents[0].downloadDir);
+            console.log("Nombre = " + result.torrents[0].name);
+            console.log("Download Rate = " + result.torrents[0].rateDownload / 1000);
+            console.log("Upload Rate = " + result.torrents[0].rateUpload / 1000);
+            console.log("Completed = " + result.torrents[0].percentDone * 100);
+            console.log("ETA = " + result.torrents[0].eta / 3600);
+            console.log("Status = " + getStatusType(result.torrents[0].status));
+        }
+    });
+}
+// Obtener estado de torrent
+function getStatusType(type) {
+    //return transmission.statusArray[type]
+    if (type === 0) {
+        return 'DETENIDA';
+    } else if (type === 1) {
+        return 'VERIFICAION EN ESPERAR';
+    } else if (type === 2) {
+        return 'COMPROBANDO';
+    } else if (type === 3) {
+        return 'DESCARGA EN ESPERA';
+    } else if (type === 4) {
+        return 'DESCARGANDO';
+    } else if (type === 5) {
+        return 'COMPLETANDO';
+    } else if (type === 6) {
+        return 'COMPLETADO';
+    } else if (type === 7) {
+        return 'AISLADA';
+    }
+}
 
 
