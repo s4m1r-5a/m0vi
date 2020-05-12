@@ -30,6 +30,7 @@ function SMSj2(tipo, titulo, mensaje) {
 if (window.location.pathname == `/admin/produccion`) {
     //Buscador
     $(document).ready(function () {
+        $('#hora').val(moment().format('YYYY-MM-DD hh:mm A'))
         var playerP = new Playerjs({ id: "playerProduction", player: 2 });
         $("#cuerpo .item").on('click', 'a', function () {
             $('#reserva').val($(this).text());
@@ -225,4 +226,473 @@ if (window.location.pathname == `/admin/produccion`) {
             _("status").innerHTML = "Upload Aborted";
         }*/
     });
+}
+if (window.location.pathname == `/admin/master`) {
+    let p = '', fecha = new Date(), fechs = new Date();
+    fecha.setDate(fecha.getDate() + 30)
+    function RecogerDatos() {
+        dts = {
+            id_venta: $('#idsms').val(),
+            correo: $('#correo').val(),
+            clave: $('#contraseña').val(),
+            clien: $('#cliente').val(),
+            smss: $('#smsdescripcion').text(),
+            movil: $("#cels").val(),
+            fechadeactivacion: $("#fechadeactivacion").val() ? '' : moment(fechs).format('YYYY-MM-DD'),
+            fechadevencimiento: $("#fechadevencimiento").val() ? '' : moment(fecha).format('YYYY-MM-DD')
+        };
+    };
+    minDateFilter = "";
+    maxDateFilter = "";
+    $.fn.dataTableExt.afnFiltering.push(
+        function (oSettings, aData, iDataIndex) {
+            if (typeof aData._date == 'undefined') {
+                aData._date = new Date(aData[2]).getTime();
+            }
+            if (minDateFilter && !isNaN(minDateFilter)) {
+                if (aData._date < minDateFilter) {
+                    return false;
+                }
+            }
+            if (maxDateFilter && !isNaN(maxDateFilter)) {
+                if (aData._date > maxDateFilter) {
+                    return false;
+                }
+            }
+            return true;
+        }
+    );
+    $.fn.dataTable.ext.search.push(
+        function (settings, data, dataIndex) {
+            var min = parseInt($('#min').val(), 10);
+            var max = parseInt($('#max').val(), 10);
+            var age = parseFloat(data[1]) || 0; // use data for the age column
+
+            if ((isNaN(min) && isNaN(max)) ||
+                (isNaN(min) && age <= max) ||
+                (min <= age && isNaN(max)) ||
+                (min <= age && age <= max)) {
+                return true;
+            }
+            return false;
+        }
+    );
+    $(document).ready(function () {
+        $('#min, #max').keyup(function () {
+            table4.draw();
+        });
+        $('#peli').click(function () {
+            tablePelis.draw();
+        })
+
+    });
+    /*$('#datatable2').on('click', '.te', function () {
+        if ($('#usuarioadmin').val() == 1) {
+            var fila = $(this).parents('tr');
+            if ($(fila).hasClass('selected')) {
+                $(fila).removeClass('selected');
+            } else {
+                $('#datatable2').DataTable().$('tr.selected').removeClass('selected');
+                $(fila).addClass('selected');
+            }
+            var data = $('#datatable2').DataTable().row(fila).data();
+            $("#idsms").val(data.id);
+            $("#car").attr("src", data.imagenes);
+            $("#cliente").val(data.cliente);
+            $("#nombrec").val(data.nombre);
+            $("#correo").val(data.correo);
+            $("#cels").val(data.movildecompra);
+            $("#plan").val(data.producto);
+            $("#contraseña").val(data.descripcion ? data.descripcion.slice(3) : '');
+            $("#fechadeactivacion").val(data.fechadeactivacion);
+            $("#fechadevencimiento").val(data.fechadevencimiento);
+            $('#ModalOrden').modal('toggle');
+        }
+    });
+    $('#datatable2').on('click', '.restablecer', function () {
+        if ($('#usuarioadmin').val() == 1) {
+            $('#ModalEventos').modal({
+                toggle: true,
+                backdrop: 'static',
+                keyboard: true,
+            });
+            var fila = $(this).parents('tr');
+            var data = $('#datatable2').DataTable().row(fila).data();
+            $.ajax({
+                type: 'POST',
+                url: '/links/proveedores',
+                data: {
+                    evento: 'Restablecer contraseña',
+                    idv: data.id,
+                    idp: data.proveedor,
+                    correo: data.correo,
+                    clave: data.descripcion ? data.descripcion.slice(3) : '',
+                    nombre: data.nombre,
+                    plan: data.producto,
+                    hora: fechs.getHours() + ":" + fechs.getMinutes() + ":" + fechs.getSeconds() + "." + fechs.getMilliseconds()
+                },
+                async: true,
+                success: function (data) {
+                    $('#ModalEventos').one('shown.bs.modal', function () {
+                        $('#ModalEventos').modal('hide')
+                    }).modal('show');
+                    if (data.estado && data.min) {
+                        tableOrden.ajax.reload(function (json) {
+                            SMSj('success', 'Solicitud de restablecimiento de contraseña enviado exitosamente')
+                        });
+                    } else if (data.estado) {
+                        SMSj('error', ' Ya envio una solicitud antes, la cual esta en estado de restauracion debe esperar 5 minutos minimos para realizar nuevamente esta solicitud');
+                    } else {
+                        SMSj('error', 'Solicitud no enviada, aun no se le envian los datos a este cliente para que pueda hacer soilcitud de restablecimiento de contyraseña...');
+                    }
+                }
+            })
+        } else {
+            SMSj('info', 'Aun no se encuentra disponible este boton')
+        }
+    });*/
+    $('#table-pelis').on('click', 'tbody td:not(:first-child)', function (e) {
+        editor.inline(this, {
+            buttons: { label: '&gt;', fn: function () { this.submit(); } }
+        });
+    });
+    //////////////////////* table-pelis *///////////////////////     
+    var tablePelis = $('#table-pelis').DataTable({
+        dom: 'Bfrtip',
+        iDisplayLength: 10,
+        stateSave: true,
+        stateDuration: -1,
+        buttons: [//'pageLength',
+            {
+                text: `<div class="mb-0">
+                    <i class="align-middle mr-2" data-feather="calendar"></i> <span class="align-middle">Fecha</span>
+               </div>`,
+                attr: {
+                    title: 'Fecha',
+                    id: 'Date'
+                },
+                className: 'btn btn-secondary fech',
+            }
+        ],
+        autoWidth: false,
+        deferRender: true,
+        paging: true,
+        search: {
+            regex: true,
+            caseInsensitive: false,
+        },
+        responsive: {
+            details: {
+                type: 'column'
+            }
+            /*details: {
+                display: $.fn.dataTable.Responsive.display.childRowImmediate,
+                type: 'none',
+                target: ''
+            }*/
+        },
+        initComplete: function (settings, json) {
+            //tableOrden.column(2).visible(true);
+        },
+        columnDefs: [
+            /*{
+                "targets": [6],
+                "visible": false,
+                "searchable": false
+            },*/
+            { responsivePriority: 1, targets: -1 },
+            { responsivePriority: 2, targets: 0 },
+            { responsivePriority: 3, targets: 2 },
+            { responsivePriority: 4, targets: -2 },
+            { responsivePriority: 10001, targets: -3 }
+        ],
+        select: {
+            style: 'os',
+            selector: 'td:first-child'
+        },
+        order: [[1, "desc"]],
+        language: {
+            "lengthMenu": "Ver",
+            "sProcessing": "Procesando...",
+            "sLengthMenu": "Ver",
+            "sZeroRecords": "No se encontraron resultados",
+            "sEmptyTable": "Ningún dato disponible",
+            "sLoadingRecords": "Cargando...",
+            "oPaginate": {
+                "sFirst": "Pri",
+                "sLast": "Últ",
+                "sNext": "Sig",
+                "sPrevious": "Ant"
+            },
+            "oAria": {
+                "sSortAscending": ": Activar para ordenar la columna de manera ascendente",
+                "sSortDescending": ": Activar para ordenar la columna de manera descendente"
+            }
+        },
+        ajax: {
+            method: "POST",
+            url: "/admin/master/pelis",
+            dataSrc: "data"
+        },
+        columns: [
+            /*{
+                className: 'control',
+                orderable: true,
+                data: null,
+                defaultContent: ''
+            },*/
+            {
+                data: "imagenes",
+                className: 'foto',
+                render: function (data, method, row) {
+                    return `<img src="${data.split(" - ")[1]}"
+                            width="60" height="60" class="rounded-circle" alt="Ashley Briggs">`
+                }
+            },
+            { data: "id" },
+            {
+                data: "titulodos",
+                className: 'te'
+            },
+            {
+                data: "slogan",
+                className: 'te'
+            },
+            {
+                data: "fecha",
+                className: 'te',
+                render: function (data, method, row) {
+                    return `<small class="float-right text-navy">${moment(data).format('l')}</small>`
+                }
+            },
+            {
+                data: "sesiones",
+                className: 'te'
+            },
+            {
+                data: "sinopsis",
+                className: 'te'
+            },
+            {
+                data: "estado",
+                render: function (data, method, row) {
+                    switch (data) {
+                        case 7:
+                            return `<span class="badge badge-pill badge-success">Disp</span>`
+                            break;
+                        case 3:
+                            return `<span class="badge badge-pill badge-danger">Pendt</span>`
+                            break;
+                        case 1:
+                            return `<span class="badge badge-pill badge-info">Procd</span>`
+                            break;
+                        case 6:
+                            return `<span class="badge badge-pill badge-warning">Dclind</span>`
+                            break;
+                        default:
+                            return `<span class="badge badge-pill badge-secondary">info</span>`
+                    }
+                }
+            },
+            {
+                className: 'restablecer',
+                orderable: false,
+                data: null,
+                defaultContent: `<div class="dropdown">
+                <button type="button" class="btn btn-sm btn-outline-danger dropdown-toggle" data-toggle="dropdown">Acción</button>
+                    <div class="dropdown-menu">
+                        <a class="dropdown-item" href="#">Disponible</a>
+                        <a class="dropdown-item" href="#">Ocultar</a>
+                        <a class="dropdown-item" href="#">Eliminar</a>
+                    </div>
+                </div>`
+            }
+        ]
+    });
+    //////////////////////* table-download *///////////////////////     
+    var tableDownload = $('#table-download').DataTable({
+        dom: 'Bfrtip',
+        iDisplayLength: 10,
+        stateSave: true,
+        stateDuration: -1,
+        buttons: [//'pageLength',
+            {
+                text: `<div class="mb-0">
+                    <i class="align-middle mr-2" data-feather="calendar"></i> <span class="align-middle">Fecha</span>
+               </div>`,
+                attr: {
+                    title: 'Fecha',
+                    id: 'Date'
+                },
+                className: 'btn btn-secondary fech',
+            }
+        ],
+        autoWidth: false,
+        deferRender: true,
+        paging: true,
+        search: {
+            regex: true,
+            caseInsensitive: false,
+        },
+        responsive: {
+            details: {
+                type: 'column'
+            }
+            /*details: {
+                display: $.fn.dataTable.Responsive.display.childRowImmediate,
+                type: 'none',
+                target: ''
+            }*/
+        },
+        initComplete: function (settings, json) {
+            //tableOrden.column(2).visible(true);
+        },
+        columnDefs: [
+            /*{
+                "targets": [6],
+                "visible": false,
+                "searchable": false
+            },*/
+            { responsivePriority: 1, targets: -1 },
+            { responsivePriority: 2, targets: 0 },
+            { responsivePriority: 3, targets: 2 },
+            { responsivePriority: 4, targets: -2 },
+            { responsivePriority: 10001, targets: -3 }
+        ],
+        select: {
+            style: 'os',
+            selector: 'td:first-child'
+        },
+        order: [[1, "desc"]],
+        language: {
+            "lengthMenu": "Ver",
+            "sProcessing": "Procesando...",
+            "sLengthMenu": "Ver",
+            "sZeroRecords": "No se encontraron resultados",
+            "sEmptyTable": "Ningún dato disponible",
+            "sLoadingRecords": "Cargando...",
+            "oPaginate": {
+                "sFirst": "Pri",
+                "sLast": "Últ",
+                "sNext": "Sig",
+                "sPrevious": "Ant"
+            },
+            "oAria": {
+                "sSortAscending": ": Activar para ordenar la columna de manera ascendente",
+                "sSortDescending": ": Activar para ordenar la columna de manera descendente"
+            }
+        },
+        ajax: {
+            method: "POST",
+            url: "/admin/master/download",
+            dataSrc: "data"
+        },
+        columns: [
+            /*{
+                className: 'control',
+                orderable: true,
+                data: null,
+                defaultContent: ''
+            },*/
+            {
+                data: "imagenes",
+                className: 'foto',
+                render: function (data, method, row) {
+                    return `<img src="${data.split(" - ")[1]}"
+                            width="60" height="60" class="rounded-circle" alt="Ashley Briggs">`
+                }
+            },
+            { data: "id" },
+            {
+                data: "titulodos",
+                className: 'te'
+            },
+            {
+                data: "slogan",
+                className: 'te'
+            },
+            {
+                data: "fecha",
+                className: 'te',
+                render: function (data, method, row) {
+                    return `<small class="float-right text-navy">${moment(data).format('l')}</small>`
+                }
+            },
+            {
+                data: "sesiones",
+                className: 'te'
+            },
+            {
+                data: "sinopsis",
+                className: 'te'
+            },
+            {
+                data: "estado",
+                render: function (data, method, row) {
+                    switch (data) {
+                        case 7:
+                            return `<span class="badge badge-pill badge-success">Disp</span>`
+                            break;
+                        case 3:
+                            return `<span class="badge badge-pill badge-danger">Pendt</span>`
+                            break;
+                        case 1:
+                            return `<span class="badge badge-pill badge-info">Procd</span>`
+                            break;
+                        case 6:
+                            return `<span class="badge badge-pill badge-warning">Dclind</span>`
+                            break;
+                        default:
+                            return `<span class="badge badge-pill badge-secondary">Aprbd</span>`
+                    }
+                }
+            },
+            {
+                className: 'restablecer',
+                orderable: false,
+                data: null,
+                defaultContent: `<div class="dropdown">
+                <button type="button" class="btn btn-sm btn-outline-danger dropdown-toggle" data-toggle="dropdown">Acción</button>
+                    <div class="dropdown-menu">
+                        <a class="dropdown-item trascodifica">Trascodificar</a>
+                        <a class="dropdown-item">Estado</a>
+                        <a class="dropdown-item">Eliminar</a>
+                    </div>
+                </div>`
+            }
+        ]
+    });
+
+    $('#dow').on('click', function () {
+        $('#Descargas .row').show('slow');
+        tableDownload.ajax.reload(function (json) {
+            tableDownload.columns.adjust().draw();
+        })
+    })
+    $('#table-download').on('click', '.trascodifica', function () {
+        $('#ModalEventos').modal({
+            toggle: true,
+            backdrop: 'static',
+            keyboard: true,
+        });
+        var fila = $(this).parents('tr');
+        var data = $('#table-download').DataTable().row(fila).data();
+        $.ajax({
+            type: 'POST',
+            url: '/admin/master/codifica',
+            data: {
+                ids: data.id,
+                idt: data.idt,
+                hora: moment().format('YYYY-MM-DD hh:mm A')
+            },
+            async: true,
+            success: function (data) {
+                $('#ModalEventos').one('shown.bs.modal', function () {
+                    $('#ModalEventos').modal('hide')
+                    tableDownload.draw()
+                }).modal('show');
+            }
+        })
+    });
+
 }

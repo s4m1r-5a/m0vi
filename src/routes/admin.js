@@ -37,13 +37,37 @@ function getTransmissionStats() {
         }
     });
 }
+
 //ffmpeg.setFfmpegPath("C:/ffmpeg/bin/ffmpeg.exe");
 ffmpeg.setFfmpegPath("/usr/bin/ffmpeg");
-router.get('/prueba', async (req, res) => {
-    console.log(req.params)
-    var url = `magnet:?xt=urn:btih:7401087e00c44fef3bd705745ac299e3817a21b6&dn=Modo.aviao.2020.1080p-dual-lat-cinecalidad.is.mp4&tr=udp%3a%2f%2ftracker.coppersurfer.tk%3a6969%2fannounce&tr=udp%3a%2f%2ftracker.internetwarriors.net%3a1337%2fannounce&tr=udp%3a%2f%2ftracker.leechers-paradise.org%3a6969%2fannounce`
-    
-    res.render('admin/produccion');
+
+router.get('/master', isLoggedIn, async (req, res) => {
+    res.render('admin/master');
+});
+router.post('/master/:id', isLoggedIn, async (req, res) => {
+    const { id } = req.params;
+    const { ids, idt, hora } = req.body;
+    if (id == 'pelis') {
+
+        sql = `SELECT * FROM contenidos`;
+        const pelis = await pool.query(sql);
+        respuesta = { "data": pelis };
+        res.send(respuesta);
+
+    } else if (id == 'download') {
+
+        sql = `SELECT * FROM contenidos WHERE estado = 3`;
+        const pelis = await pool.query(sql);
+        respuesta = { "data": pelis };
+        res.send(respuesta);
+
+    } else if (id == 'codifica') {
+
+        //await pool.query('UPDATE contenidos SET ? WHERE id = ?', [{ estado: 4 }, ids]);
+        getTorrentDetails(ids, parseFloat(idt), hora)
+        res.json(req.body);
+    }
+
 });
 
 //////////////////////* ADMINISTRACIÓN SUBIDA DE CONTENIDO */////////////////////////////////////
@@ -75,8 +99,8 @@ router.get('/busqueda', isLoggedIn, async (req, res) => {
 router.get('/produccion', (req, res) => {
     res.render('admin/produccion');
 });
-router.post('/produccion', async (req, res) => {
-    const { id, imagenes, titulo, slogan, fecha, genero, sinopsis, trailer, url } = req.body
+router.post('/produccion', (req, res) => {
+    const { id, imagenes, titulo, slogan, fecha, genero, sinopsis, trailer, url, hora } = req.body
     var sesions = '';
     if (Array.isArray(genero)) {
         genero.map((s) => {
@@ -88,7 +112,16 @@ router.post('/produccion', async (req, res) => {
     }
     const video = {
         id, titulouno: titulo[0], titulodos: titulo[1], imagenes: `${imagenes[0]} - ${imagenes[1]}`,
-        slogan, fecha, sesiones: sesions, sinopsis, trailer, ruta: `uploads/${id}/master.m3u8`, estado: 7
+        slogan, fecha, fechac: hora, sesiones: sesions, sinopsis, trailer, ruta: `uploads/${id}/master.m3u8`, estado: 3
+    }
+    var bd = async () => {
+        const vedeo = await pool.query('SELECT * FROM contenidos WHERE id = ?', id);
+        if (!vedeo.length) {
+            await pool.query('INSERT INTO contenidos SET ? ', video);
+        } else {
+            delete video.id
+            await pool.query('UPDATE contenidos SET ? WHERE id = ?', [video, id]);
+        };
     }
     if (url) {
         transmission.addUrl(url, {
@@ -99,15 +132,13 @@ router.post('/produccion', async (req, res) => {
                 return console.log(err);
             }
             video.idt = result.id;
+            bd()
+            //getTorrentDetails(id, result.id, hora)
         });
-    }
-    const vedeo = await pool.query('SELECT * FROM contenidos WHERE id = ?', id);
-    if (!vedeo.length) {
-        await pool.query('INSERT INTO contenidos SET ? ', video);
     } else {
-        delete video.id
-        await pool.query('UPDATE contenidos SET ? WHERE id = ?', [video, id]);
-    };
+        bd()
+    }
+
 
     res.send('Trascodificando')
     function createDirectory(directoryPath) {
@@ -171,18 +202,20 @@ router.post('/produccion', async (req, res) => {
 
     // Save a converted version with the original size
     command.save(path.join(__dirname, `../public/uploads/${id}/v${id}_1080p.m3u8`))
-        .on('start', function (commandLine) {
-            console.log('Spawned Ffmpeg with command: ' + commandLine);
+        .on('start', async (commandLine) => {
+            //console.log('Spawned Ffmpeg with command: ' + commandLine);
+            await pool.query('UPDATE contenidos SET ? WHERE id = ?', [{ estado: 1 }, id]);
         })
-        .on('error', function (err, stdout, stderr) {
-            console.log('An error occurred: ' + err.message, err, stderr);
+        .on('error', async (err, stdout, stderr) => {
+            //console.log('An error occurred: ' + err.message, err, stderr);
+            await pool.query('UPDATE contenidos SET ? WHERE id = ?', [{ estado: 6 }, id]);
         })
-        .on('progress', function (progress) {
+        /*.on('progress', function (progress) {
             console.log('Processing: ' + progress.percent + '% done')
-        })
-        .on('end', function (err, stdout, stderr) {
-            console.log('Finished processing!', err, stdout, stderr)
-            //res.json(req.body)
+        })*/
+        .on('end', async (err, stdout, stderr) => {
+            //console.log('Finished processing!', err, stdout, stderr)
+            await pool.query('UPDATE contenidos SET ? WHERE id = ?', [{ inicio: hora, estado: 7 }, id]);
         })
         .run()
 
@@ -284,32 +317,26 @@ function ID(lon) {
     };
     return code;
 };
-module.exports = router;
-
-
-
-
-
-
-function getTorrentDetails(id) {
-    transmission.get(id, function (err, result) {
+function getTorrentDetails(id, id2, hora) {
+    transmission.get(id2, function (err, result) {
         if (err) {
             throw err;
         }
         if (result.torrents.length > 0) {
             //console.log(result.torrents[0]);			// Obtiene todos los detalles :
-            console.log("Ruta = " + result.torrents[0].downloadDir);
+            var ru = result.torrents[0].downloadDir + '/' + result.torrents[0].name;
+            /*console.log("Ruta = " + result.torrents[0].downloadDir);
             console.log("Nombre = " + result.torrents[0].name);
             console.log("Download Rate = " + result.torrents[0].rateDownload / 1000);
             console.log("Upload Rate = " + result.torrents[0].rateUpload / 1000);
             console.log("Completed = " + result.torrents[0].percentDone * 100);
-            console.log("ETA = " + result.torrents[0].eta / 3600);
-            console.log("Status = " + getStatusType(result.torrents[0].status));
+            console.log("ETA = " + result.torrents[0].eta / 3600);*/
+            getStatusType(result.torrents[0].status, id, hora, ru);
         }
     });
 }
 // Obtener estado de torrent
-function getStatusType(type) {
+function getStatusType(type, id, hora, ruta) {
     //return transmission.statusArray[type]
     if (type === 0) {
         return 'DETENIDA';
@@ -323,11 +350,66 @@ function getStatusType(type) {
         return 'DESCARGANDO';
     } else if (type === 5) {
         return 'COMPLETANDO';
-    } else if (type === 6) {
+    } else if (type === 6 && id) {
+        var command = ffmpeg(ruta)
+            .outputOptions([
+                '-c:v h264',
+                '-hls_time 5',
+                '-hls_playlist_type vod',
+                '-hls_list_size 0',
+                '-start_number 0',
+                '-f hls',
+                '-master_pl_name master.m3u8'
+            ]);
+        // Create a clone to save a small resized version
+        command.clone()
+            .size('720x?')
+            .outputOptions('-master_pl_name master720.m3u8')
+            .save(path.join(__dirname, `../public/uploads/${id}/v${id}_720p.m3u8`))
+        command.clone()
+            .size('480x?')
+            .outputOptions('-master_pl_name master480.m3u8')
+            .save(path.join(__dirname, `../public/uploads/${id}/v${id}_480p.m3u8`))
+        command.clone()
+            .size('360x?')
+            .outputOptions('-master_pl_name master360.m3u8')
+            .save(path.join(__dirname, `../public/uploads/${id}/v${id}_360p.m3u8`))
+        command.clone()
+            .size('240x?')
+            .outputOptions('-master_pl_name master240.m3u8')
+            .save(path.join(__dirname, `../public/uploads/${id}/v${id}_240p.m3u8`))
+
+        // Save a converted version with the original size
+        command.save(path.join(__dirname, `../public/uploads/${id}/v${id}_1080p.m3u8`))
+            .on('start', async (commandLine) => {
+                //console.log('Spawned Ffmpeg with command: ' + commandLine);
+                await pool.query('UPDATE contenidos SET ? WHERE id = ?', [{ estado: 1 }, id]);
+            })
+            .on('error', async (err, stdout, stderr) => {
+                //console.log('An error occurred: ' + err.message, err, stderr);
+                await pool.query('UPDATE contenidos SET ? WHERE id = ?', [{ estado: 6 }, id]);
+            })
+            /*.on('progress', function (progress) {
+                console.log('Processing: ' + progress.percent + '% done')
+            })*/
+            .on('end', async (err, stdout, stderr) => {
+                //console.log('Finished processing!', err, stdout, stderr)
+                await pool.query('UPDATE contenidos SET ? WHERE id = ?', [{ inicio: hora, estado: 7 }, id]);
+            })
+            .run()
+    } else if (type === 6 && !id) {
         return 'COMPLETADO';
     } else if (type === 7) {
         return 'AISLADA';
     }
 }
+module.exports = router;
+
+
+
+
+
+
+
 
 
