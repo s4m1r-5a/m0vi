@@ -37,7 +37,7 @@ function getTransmissionStats() {
         }
     });
 }
-
+//esta es la prueba de que si esta subiendo la vuelta
 //ffmpeg.setFfmpegPath("C:/ffmpeg/bin/ffmpeg.exe");
 ffmpeg.setFfmpegPath("/usr/bin/ffmpeg");
 
