@@ -47,6 +47,7 @@ router.get('/master', isLoggedIn, async (req, res) => {
 router.post('/master/:id', isLoggedIn, async (req, res) => {
     const { id } = req.params;
     const { ids, idt, hora } = req.body;
+
     if (id == 'pelis') {
 
         sql = `SELECT * FROM contenidos`;
@@ -66,6 +67,17 @@ router.post('/master/:id', isLoggedIn, async (req, res) => {
         //await pool.query('UPDATE contenidos SET ? WHERE id = ?', [{ estado: 4 }, ids]);
         getTorrentDetails(ids, parseFloat(idt), hora)
         res.json(req.body);
+
+    } else if (id == 'pendiente') {
+
+        await pool.query('UPDATE contenidos SET ? WHERE id = ?', [{ estado: 3 }, ids]);
+        res.send(true);
+
+    } else if (id == 'disponible') {
+
+        await pool.query('UPDATE contenidos SET ? WHERE id = ?', [{ estado: 7 }, ids]);
+        res.send(true);
+
     }
 
 });

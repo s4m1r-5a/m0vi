@@ -351,11 +351,11 @@ if (window.location.pathname == `/admin/master`) {
             SMSj('info', 'Aun no se encuentra disponible este boton')
         }
     });*/
-    $('#table-pelis').on('click', 'tbody td:not(:first-child)', function (e) {
+    /*$('#table-pelis').on('click', 'tbody td:not(:first-child)', function (e) {
         editor.inline(this, {
             buttons: { label: '&gt;', fn: function () { this.submit(); } }
         });
-    });
+    });*/
     //////////////////////* table-pelis *///////////////////////     
     var tablePelis = $('#table-pelis').DataTable({
         dom: 'Bfrtip',
@@ -501,13 +501,55 @@ if (window.location.pathname == `/admin/master`) {
                 defaultContent: `<div class="dropdown">
                 <button type="button" class="btn btn-sm btn-outline-danger dropdown-toggle" data-toggle="dropdown">Acción</button>
                     <div class="dropdown-menu">
-                        <a class="dropdown-item" href="#">Disponible</a>
-                        <a class="dropdown-item" href="#">Ocultar</a>
-                        <a class="dropdown-item" href="#">Eliminar</a>
+                        <a class="dropdown-item disponible">Disponible</a>
+                        <a class="dropdown-item pendiente">Pendiente</a>
+                        <a class="dropdown-item eliminar">Eliminar</a>
                     </div>
                 </div>`
             }
         ]
+    });
+    tablePelis.on('click', '.pendiente', function () {
+        $('#ModalEventos').modal({
+            toggle: true,
+            backdrop: 'static',
+            keyboard: true,
+        });
+        var fila = $(this).parents('tr');
+        var data = tablePelis.row(fila).data();
+        $.ajax({
+            type: 'POST',
+            url: '/admin/master/pendiente',
+            data: { ids: data.id },
+            async: true,
+            success: function (data) {
+                tablePelis.ajax.reload(function (json) {
+                    tablePelis.columns.adjust().draw();
+                    $('#ModalEventos').modal('hide')
+                })
+            }
+        })
+    });
+    tablePelis.on('click', '.disponible', function () {
+        $('#ModalEventos').modal({
+            toggle: true,
+            backdrop: 'static',
+            keyboard: true,
+        });
+        var fila = $(this).parents('tr');
+        var data = tablePelis.row(fila).data();
+        $.ajax({
+            type: 'POST',
+            url: '/admin/master/disponible',
+            data: { ids: data.id },
+            async: true,
+            success: function (data) {
+                tablePelis.ajax.reload(function (json) {
+                    tablePelis.columns.adjust().draw();
+                    $('#ModalEventos').modal('hide')
+                })
+            }
+        })
     });
     //////////////////////* table-download *///////////////////////     
     var tableDownload = $('#table-download').DataTable({
@@ -620,10 +662,6 @@ if (window.location.pathname == `/admin/master`) {
             },
             {
                 data: "sesiones",
-                className: 'te'
-            },
-            {
-                data: "sinopsis",
                 className: 'te'
             },
             {
