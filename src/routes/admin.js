@@ -44,6 +44,38 @@ ffmpeg.setFfmpegPath("/usr/bin/ffmpeg");
 router.get('/master', isLoggedIn, async (req, res) => {
     res.render('admin/master');
 });
+router.get('/prueba', (req, res) => {
+    transmission.get(async (err, arg) => {
+        if (err) { throw err }
+        else {
+            var resul = await arg.torrents.map((a) => {
+                return {
+                    Id: a.id,
+                    Nombre: a.name,
+                    Ruta: a.downloadDir,
+                    Completado: a.percentDone * 100
+                }
+            })
+            console.log(resul)
+            res.json(resul)
+            /*res.setHeader('Content-Type', 'application/json');
+            res.send(JSON.stringify(resul));*/
+        }
+    });
+
+    /*transmission.get(id, function (err, result) {
+        if (err) { throw err }
+        if (result.torrents.length > 0) {
+            // console.log(result.torrents[0]);			// Gets all details
+            console.log("Name = " + result.torrents[0].name);
+            console.log("Download Rate = " + result.torrents[0].rateDownload / 1000);
+            console.log("Upload Rate = " + result.torrents[0].rateUpload / 1000);
+            console.log("Completed = " + result.torrents[0].percentDone * 100);
+            console.log("ETA = " + result.torrents[0].eta / 3600);
+            console.log("Status = " + getStatusType(result.torrents[0].status));
+        }
+    });*/
+})
 router.post('/master/:id', isLoggedIn, async (req, res) => {
     const { id } = req.params;
     const { ids, idt, hora } = req.body;
@@ -55,6 +87,26 @@ router.post('/master/:id', isLoggedIn, async (req, res) => {
         respuesta = { "data": pelis };
         res.send(respuesta);
 
+    } else if (id == 'torrents') {
+
+        transmission.get(async (err, arg) => {
+            if (err) { throw err }
+            else {
+                var resul = await arg.torrents.map((a) => {
+                    return {
+                        Id: a.id,
+                        Nombre: a.name,
+                        Ruta: a.downloadDir,
+                        Completado: a.percentDone * 100
+                    }
+                })
+                respuesta = { "data": resul };
+                res.send(respuesta);
+                /*res.setHeader('Content-Type', 'application/json');
+                res.send(JSON.stringify(resul));*/
+            }
+        });
+
     } else if (id == 'download') {
 
         sql = `SELECT * FROM contenidos WHERE estado = 3`;
@@ -65,6 +117,7 @@ router.post('/master/:id', isLoggedIn, async (req, res) => {
     } else if (id == 'codifica') {
 
         //await pool.query('UPDATE contenidos SET ? WHERE id = ?', [{ estado: 4 }, ids]);
+
         getTorrentDetails(ids, parseFloat(idt), hora)
         res.json(req.body);
 
@@ -78,8 +131,21 @@ router.post('/master/:id', isLoggedIn, async (req, res) => {
         await pool.query('UPDATE contenidos SET ? WHERE id = ?', [{ estado: 7 }, ids]);
         res.send(true);
 
-    }
+    } else if (id == 'estado') {
 
+        transmission.get(parseFloat(idt), async (err, result) => {
+            if (err) { throw err }
+            if (result.torrents.length > 0) {
+                var j = {
+                    Ruta: result.torrents[0].downloadDir,
+                    Nombre: result.torrents[0].name,
+                    Completado: result.torrents[0].percentDone * 100
+                }
+                await pool.query('UPDATE contenidos SET ? WHERE id = ?', [{ peli: `${idt} - ${j.Ruta} - ${j.Nombre}`, completado: j.Completado }, ids]);
+            }
+        });
+        res.send(true);
+    }
 });
 
 //////////////////////* ADMINISTRACIÓN SUBIDA DE CONTENIDO */////////////////////////////////////
@@ -145,6 +211,20 @@ router.post('/produccion', (req, res) => {
             }
             video.idt = result.id;
             bd()
+            transmission.waitForState(result.id, 'SEED', function (err, arg) {
+                var options = {
+                    method: 'POST',
+                    url: 'https://eu89.chat-api.com/instance107218/sendMessage?token=5jn3c5dxvcj27fm0',
+                    form: {
+                        "phone": '573007753983',
+                        "body": `Samir ya se descargo la pelicula con el ID ${result.id} - ${arg.torrents}`
+                    }
+                };
+                request(options, function (error, response, body) {
+                    if (error) return console.error('Failed: %s', error.message);
+                    console.log('Success: ', body);
+                });
+            });
             //getTorrentDetails(id, result.id, hora)
         });
     } else {

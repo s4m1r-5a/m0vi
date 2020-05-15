@@ -507,7 +507,12 @@ if (window.location.pathname == `/admin/master`) {
                     </div>
                 </div>`
             }
-        ]
+        ],
+        rowCallback: function (row, data, index) {
+            if (data["estado"] == 3) {
+                $(row).css("background-color", "#FFFFCC");
+            }
+        }
     });
     tablePelis.on('click', '.pendiente', function () {
         $('#ModalEventos').modal({
@@ -624,6 +629,14 @@ if (window.location.pathname == `/admin/master`) {
                 "sSortDescending": ": Activar para ordenar la columna de manera descendente"
             }
         },
+        /*fnRowCallback: function (nRow, aData, iDisplayIndex, iDisplayIndexFull) {
+            if (aData[-2] == 3) {
+                $('td', nRow).css('background-color', 'Red');
+            }
+            else if (aData[-2] == 7) {
+                $('td', nRow).css('background-color', 'Orange');
+            }
+        },*/
         ajax: {
             method: "POST",
             url: "/admin/master/download",
@@ -665,6 +678,14 @@ if (window.location.pathname == `/admin/master`) {
                 className: 'te'
             },
             {
+                data: "peli",
+                className: 'te'
+            },
+            {
+                data: "completado",
+                className: 'te'
+            },
+            {
                 data: "estado",
                 render: function (data, method, row) {
                     switch (data) {
@@ -693,12 +714,20 @@ if (window.location.pathname == `/admin/master`) {
                 <button type="button" class="btn btn-sm btn-outline-danger dropdown-toggle" data-toggle="dropdown">Acción</button>
                     <div class="dropdown-menu">
                         <a class="dropdown-item trascodifica">Trascodificar</a>
-                        <a class="dropdown-item">Estado</a>
+                        <a class="dropdown-item estado">Estado</a>
                         <a class="dropdown-item">Eliminar</a>
                     </div>
                 </div>`
             }
-        ]
+        ],
+        rowCallback: function (row, data, index) {
+            if (data["completado"] == 100) {
+                $(row).css("background-color", "#FFFFCC");
+            }
+            else if (data["completado"] < 100) {
+                $(row).css("background-color", "#39E9CC");
+            }
+        }
     });
 
     $('#dow').on('click', function () {
@@ -707,14 +736,14 @@ if (window.location.pathname == `/admin/master`) {
             tableDownload.columns.adjust().draw();
         })
     })
-    $('#table-download').on('click', '.trascodifica', function () {
+    tableDownload.on('click', '.trascodifica', function () {
         $('#ModalEventos').modal({
             toggle: true,
             backdrop: 'static',
             keyboard: true,
         });
         var fila = $(this).parents('tr');
-        var data = $('#table-download').DataTable().row(fila).data();
+        var data = tableDownload.row(fila).data();
         $.ajax({
             type: 'POST',
             url: '/admin/master/codifica',
@@ -732,5 +761,140 @@ if (window.location.pathname == `/admin/master`) {
             }
         })
     });
+    tableDownload.on('click', '.estado', function () {
+        $('#ModalEventos').modal({
+            toggle: true,
+            backdrop: 'static',
+            keyboard: true,
+        });
+        var fila = $(this).parents('tr');
+        var data = tableDownload.row(fila).data();
+        $.ajax({
+            type: 'POST',
+            url: '/admin/master/estado',
+            data: {
+                ids: data.id,
+                idt: data.idt
+            },
+            async: true,
+            success: function (data) {
+                if (data) {
+                    tableDownload.ajax.reload(function (json) {
+                        tableDownload.columns.adjust().draw();
+                        tableDownload.row(fila)
+                        $('#ModalEventos').modal('hide')
+                    })
+                } else {
+                    tableDownload.ajax.reload(function (json) {
+                        tableDownload.columns.adjust().draw();
+                        $('#ModalEventos').modal('hide')
+                    })
+                }
+            }
+        })
+    });
+
+    //////////////////////* table-torrents *///////////////////////     
+    var tableTorrents = $('#table-torrents').DataTable({
+        //dom: 'Bfrtip',
+        iDisplayLength: 10,
+        stateSave: true,
+        stateDuration: -1,
+        autoWidth: false,
+        deferRender: true,
+        paging: true,
+        search: {
+            regex: true,
+            caseInsensitive: false,
+        },
+        responsive: {
+            details: {
+                type: 'column'
+            }
+            /*details: {
+                display: $.fn.dataTable.Responsive.display.childRowImmediate,
+                type: 'none',
+                target: ''
+            }*/
+        },
+        initComplete: function (settings, json) {
+            //tableOrden.column(2).visible(true);
+        },
+        columnDefs: [
+            { responsivePriority: 1, targets: -1 },
+            { responsivePriority: 2, targets: 0 }
+        ],
+        select: {
+            style: 'os',
+            selector: 'td:first-child'
+        },
+        order: [[1, "desc"]],
+        language: {
+            "lengthMenu": "Ver",
+            "sProcessing": "Procesando...",
+            "sLengthMenu": "Ver",
+            "sZeroRecords": "No se encontraron resultados",
+            "sEmptyTable": "Ningún dato disponible",
+            "sLoadingRecords": "Cargando...",
+            "oPaginate": {
+                "sFirst": "Pri",
+                "sLast": "Últ",
+                "sNext": "Sig",
+                "sPrevious": "Ant"
+            },
+            "oAria": {
+                "sSortAscending": ": Activar para ordenar la columna de manera ascendente",
+                "sSortDescending": ": Activar para ordenar la columna de manera descendente"
+            }
+        },
+        ajax: {
+            method: "POST",
+            url: "/admin/master/torrents",
+            dataSrc: "data"
+        },
+        columns: [
+            { data: "Id" },
+            {
+                data: "Nombre",
+                className: 'te'
+            },
+            {
+                data: "Ruta",
+                className: 'te'
+            },
+            {
+                data: "Completado",
+                render: function (data, method, row) {
+                    switch (data) {
+                        case 100:
+                            return `<span class="badge badge-pill badge-success">${data}%</span>`
+                            break;
+                        default:
+                            return `<span class="badge badge-pill badge-secondary">${data}%</span>`
+                    }
+                }
+            },
+            {
+                className: 'restablecer',
+                orderable: false,
+                data: null,
+                defaultContent: `<div class="dropdown">
+                <button type="button" class="btn btn-sm btn-outline-danger dropdown-toggle" data-toggle="dropdown">Acción</button>
+                    <div class="dropdown-menu">
+                        <a class="dropdown-item ">Trascodificar</a>
+                        <a class="dropdown-item ">Estado</a>
+                        <a class="dropdown-item">Eliminar</a>
+                    </div>
+                </div>`
+            }
+        ],
+        rowCallback: function (row, data, index) {
+            if (data["Completado"] == 100) {
+                $(row).css("background-color", "#39E9CC");
+            }
+        }
+    });
+
+
 
 }
