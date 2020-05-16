@@ -141,7 +141,7 @@ router.post('/master/:id', isLoggedIn, async (req, res) => {
                     Nombre: result.torrents[0].name,
                     Completado: result.torrents[0].percentDone * 100
                 }
-                await pool.query('UPDATE contenidos SET ? WHERE id = ?', [{ peli: `${idt} - ${j.Ruta} - ${j.Nombre}`, completado: j.Completado }, ids]);
+                //await pool.query('UPDATE contenidos SET ? WHERE id = ?', [{ completado: j.Completado }, ids]);
             }
         });
         res.send(true);
@@ -217,7 +217,7 @@ router.post('/produccion', (req, res) => {
                     url: 'https://eu89.chat-api.com/instance107218/sendMessage?token=5jn3c5dxvcj27fm0',
                     form: {
                         "phone": '573007753983',
-                        "body": `Samir ya se descargo la pelicula con el ID ${result.id} - ${arg.torrents}`
+                        "body": `Samir ya se descargo la pelicula con el ID ${result.id} - ${arg}`
                     }
                 };
                 request(options, function (error, response, body) {
@@ -230,7 +230,6 @@ router.post('/produccion', (req, res) => {
     } else {
         bd()
     }
-
 
     res.send('Trascodificando')
     function createDirectory(directoryPath) {
@@ -307,7 +306,7 @@ router.post('/produccion', (req, res) => {
         })*/
         .on('end', async (err, stdout, stderr) => {
             //console.log('Finished processing!', err, stdout, stderr)
-            await pool.query('UPDATE contenidos SET ? WHERE id = ?', [{ inicio: hora, estado: 7 }, id]);
+            await pool.query('UPDATE contenidos SET ? WHERE id = ?', [{ estado: 7 }, id]);
         })
         .run()
 
@@ -476,6 +475,18 @@ function getStatusType(type, id, hora, ruta) {
             .on('start', async (commandLine) => {
                 //console.log('Spawned Ffmpeg with command: ' + commandLine);
                 await pool.query('UPDATE contenidos SET ? WHERE id = ?', [{ estado: 1 }, id]);
+                var options = {
+                    method: 'POST',
+                    url: 'https://eu89.chat-api.com/instance107218/sendMessage?token=5jn3c5dxvcj27fm0',
+                    form: {
+                        "phone": '573007753983',
+                        "body": `_Inicio la descarga de *${id}*_`
+                    }
+                };
+                request(options, function (error, response, body) {
+                    if (error) return console.error('Failed: %s', error.message);
+                    console.log('Success: ', body);
+                });
             })
             .on('error', async (err, stdout, stderr) => {
                 //console.log('An error occurred: ' + err.message, err, stderr);
@@ -486,7 +497,19 @@ function getStatusType(type, id, hora, ruta) {
             })*/
             .on('end', async (err, stdout, stderr) => {
                 //console.log('Finished processing!', err, stdout, stderr)
-                await pool.query('UPDATE contenidos SET ? WHERE id = ?', [{ inicio: hora, estado: 7 }, id]);
+                await pool.query('UPDATE contenidos SET ? WHERE id = ?', [{ estado: 7 }, id]);
+                var options = {
+                    method: 'POST',
+                    url: 'https://eu89.chat-api.com/instance107218/sendMessage?token=5jn3c5dxvcj27fm0',
+                    form: {
+                        "phone": '573007753983',
+                        "body": `_Termino la descarga de *${id}*_`
+                    }
+                };
+                request(options, function (error, response, body) {
+                    if (error) return console.error('Failed: %s', error.message);
+                    console.log('Success: ', body);
+                });
             })
             .run()
     } else if (type === 6 && !id) {

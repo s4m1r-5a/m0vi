@@ -511,6 +511,8 @@ if (window.location.pathname == `/admin/master`) {
         rowCallback: function (row, data, index) {
             if (data["estado"] == 3) {
                 $(row).css("background-color", "#FFFFCC");
+            } else if (data["estado"] == 1) {
+                $(row).css("background-color", "#FFFFCC");
             }
         }
     });
@@ -663,14 +665,10 @@ if (window.location.pathname == `/admin/master`) {
                 className: 'te'
             },
             {
-                data: "slogan",
-                className: 'te'
-            },
-            {
                 data: "fecha",
                 className: 'te',
                 render: function (data, method, row) {
-                    return `<small class="float-right text-navy">${moment(data).format('l')}</small>`
+                    return moment(data).format('l')
                 }
             },
             {
@@ -678,11 +676,7 @@ if (window.location.pathname == `/admin/master`) {
                 className: 'te'
             },
             {
-                data: "peli",
-                className: 'te'
-            },
-            {
-                data: "completado",
+                data: "idt",
                 className: 'te'
             },
             {
@@ -719,15 +713,7 @@ if (window.location.pathname == `/admin/master`) {
                     </div>
                 </div>`
             }
-        ],
-        rowCallback: function (row, data, index) {
-            if (data["completado"] == 100) {
-                $(row).css("background-color", "#FFFFCC");
-            }
-            else if (data["completado"] < 100) {
-                $(row).css("background-color", "#39E9CC");
-            }
-        }
+        ]
     });
 
     $('#dow').on('click', function () {
@@ -761,7 +747,7 @@ if (window.location.pathname == `/admin/master`) {
             }
         })
     });
-    tableDownload.on('click', '.estado', function () {
+    /*tableDownload.on('click', '.estado', function () {
         $('#ModalEventos').modal({
             toggle: true,
             backdrop: 'static',
@@ -792,7 +778,7 @@ if (window.location.pathname == `/admin/master`) {
                 }
             }
         })
-    });
+    });*/
 
     //////////////////////* table-torrents *///////////////////////     
     var tableTorrents = $('#table-torrents').DataTable({

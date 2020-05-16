@@ -22,7 +22,7 @@ Array.prototype.compacta = function () {
 }
 
 router.get('/', async (req, res) => {
-    const contenido = await pool.query('SELECT * FROM contenidos'); // WHERE estado = 7
+    const contenido = await pool.query('SELECT * FROM contenidos WHERE estado = 7');
     //console.log(contenido)
     var generos = new Array, datos = new Array, contnido
 
